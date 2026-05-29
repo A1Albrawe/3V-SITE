@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>معرض المشاريع | Telegram OS</title>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* 🎨 مصفوفة التناغم اللوني والتبديل الديناميكي لتليجرام */
+        :root[theme="dark"] {
+            --tg-bg-main: #0e1621;
+            --tg-bg-sidebar: #17212b;
+            --tg-bg-chat: #182533;
+            --tg-text-main: #f5f5f5;
+            --tg-text-sub: #708499;
+            --tg-color-active: #5288c1;
+            --tg-neon-glow: 0 0 15px rgba(82, 136, 193, 0.6);
+            --tg-border: #101921;
+        }
+        :root[theme="light"] {
+            --tg-bg-main: #f4f4f5;
+            --tg-bg-sidebar: #ffffff;
+            --tg-bg-chat: #ffffff;
+            --tg-text-main: #000000;
+            --tg-text-sub: #707579;
+            --tg-color-active: #3390ec;
+            --tg-neon-glow: 0 0 15px rgba(51, 144, 236, 0.4);
+            --tg-border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-bg-main);
+            color: var(--tg-text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .tg-layout-wrapper { display: flex; width: 100%; height: 100vh; }
+
+        /* القائمة الجانبية الثابتة الموحدة */
+        .tg-sidebar-chats {
+            width: 320px;
+            background-color: var(--tg-bg-sidebar);
+            border-left: 1px solid var(--tg-border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+
+        .tg-sidebar-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--tg-border);
+        }
+
+        .chats-scrollable-area { flex: 1; overflow-y: auto; }
+
+        .chat-item-node {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--tg-border);
+            transition: 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .chat-item-node:hover, .chat-item-node.active {
+            background-color: var(--tg-color-active);
+            color: #fff !important;
+            box-shadow: var(--tg-neon-glow);
+        }
+
+        .chat-node-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(82, 136, 193, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            font-size: 18px;
+            color: var(--tg-color-active);
+            flex-shrink: 0;
+        }
+        .chat-item-node:hover .chat-node-icon, .chat-item-node.active .chat-node-icon {
+            color: #fff; background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-node-meta { display: flex; flex-direction: column; overflow: hidden; text-align: right; }
+        .chat-node-title { font-size: 14.5px; font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-node-preview { font-size: 12px; color: var(--tg-text-sub); margin: 4px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item-node:hover .chat-node-preview, .chat-item-node.active .chat-node-preview { color: rgba(255,255,255,0.8); }
+    </style>
+</head>
+<style>
+    /* الجناح الأيسر: مساحة عرض شات القناة التفاعلي للمشاريع */
+    .tg-main-chat-view {
+        flex: 1;
+        background-color: var(--tg-bg-main);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition: background 0.3s;
+    }
+
+    .chat-header-bar {
+        height: 60px;
+        background-color: var(--tg-bg-sidebar);
+        border-bottom: 1px solid var(--tg-border);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        justify-content: space-between;
+        z-index: 10;
+        transition: background 0.3s;
+    }
+
+    .theme-toggle-btn { background: none; border: none; color: var(--tg-color-active); font-size: 18px; cursor: pointer; }
+
+    .chat-messages-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        align-items: center;
+        background: var(--tg-bg-main);
+    }
+
+    /* 🪐 تصميم صندوق المنشورات ليكون مطابقاً لرسائل القنوات الرسمية */
+    .tg-channel-post-bubble {
+        width: 100%;
+        max-width: 650px;
+        background-color: var(--tg-bg-chat);
+        border: 1px solid var(--tg-border);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        text-align: right;
+        transition: background 0.3s;
+    }
+
+    .post-header-author {
+        font-size: 14px;
+        font-weight: bold;
+        color: var(--tg-color-active);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .post-body-text {
+        font-size: 14.5px;
+        line-height: 1.6;
+        margin: 0 0 15px 0;
+        white-space: pre-line;
+    }
+
+    /* 🪟 الأزرار الزجاجية الشفافة المدمجة بالمنشورات */
+    .post-inline-buttons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 8px;
+        margin-top: 5px;
+    }
+
+    .inline-tg-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 11px;
+        background-color: rgba(82, 136, 193, 0.08);
+        border: 1px solid rgba(82, 136, 193, 0.2);
+        border-radius: 6px;
+        color: var(--tg-color-active);
+        text-decoration: none;
+        font-size: 13.5px;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+    .inline-tg-btn:hover {
+        background-color: var(--tg-color-active);
+        color: #fff !important;
+        box-shadow: var(--tg-neon-glow);
+    }
+
+    .post-footer-meta {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+        font-size: 11.5px;
+        color: var(--tg-text-sub);
+    }
+
+    @media (max-width: 768px) {
+        .tg-sidebar-chats { width: 75px; }
+        .chat-node-meta, .tg-sidebar-header h3 { display: none; }
+        .chat-node-icon { margin-left: 0; }
+        .chat-item-node { justify-content: center; padding: 15px 0; }
+    }
+</style>
+
+<body theme="dark">
+    <div class="tg-layout-wrapper">
+        
+        <!-- الجناح الأيمن الثابت للملاحة -->
+        <div class="tg-sidebar-chats">
+            <div class="tg-sidebar-header">
+                <h3 style="margin: 0; font-size: 16px;">تليجرام OS</h3>
+                <i class="fas fa-bars" style="color: var(--tg-text-sub);"></i>
+            </div>
+            
+            <div class="chats-scrollable-area">
+                <a href="/" class="chat-item-node">
+                    <div class="chat-node-icon"><i class="fas fa-user-shield"></i></div>
+                    <div class="chat-node-meta">
+                        <h4 class="chat-node-title">البوابة الرئيسية</h4>
+                        <p class="chat-node-preview">الملف الشخصي الموثق</p>
+                    </div>
+                </a>
+                <div class="section-menu-divider" style="padding: 10px 15px 5px 15px; font-size: 11px; color: var(--tg-text-sub); text-align: right;">القنوات والوحدات 📂</div>
+                <a href="/projects" class="chat-item-node active">
+                    <div class="chat-node-icon"><i class="fas fa-folder"></i></div>
+                    <div class="chat-node-meta">
+                        <h4 class="chat-node-title">معرض المشاريع</h4>
+                        <p class="chat-node-preview">منشورات تفاعلية للمشاريع</p>
+                    </div>
+                </a>
+                <a href="/report" class="chat-item-node">
+                    <div class="chat-node-icon" style="color: var(--tg-color-active);"><i class="fas fa-tools"></i></div>
+                    <div class="chat-node-meta">
+                        <h4 class="chat-node-title">بلاغات الصيانة</h4>
+                        <p class="chat-node-preview">إرسال تنبيه حي للبوت</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <!-- الجناح الأيسر: مساحة شات القناة الرئيسي للمشاريع -->
+        <div class="tg-main-chat-view">
+            <div class="chat-header-bar">
+                <div style="text-align: right;">
+                    <h3 style="margin: 0; font-size: 15px;">قناة معرض مشاريع الأدمن</h3>
+                    <span style="font-size: 11.5px; color: var(--tg-text-sub);">@Albrawe_Projects | 2.4K مشترك</span>
+                </div>
+                <button class="theme-toggle-btn" onclick="toggleTelegramTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+            </div>
+            
+            <div class="chat-messages-container">
+                
+                <!-- 📡 منشور المشروع الأول (مثال: رادار المراقبة الفوري لـ تليجرام OS) -->
+                <div class="tg-channel-post-bubble">
+                    <span class="post-header-author">Albrawe <i class="fas fa-check-circle" style="font-size:12px;"></i></span>
+                    <p class="post-body-text">
+                        🚀 **إطلاق نظام ALBRAWE TELEGRAM OPERATING SYSTEM (v2026)**
+                        
+                        تم بناء المعمارية الكاملة للبوابة السحابية وتكاملها مع بروتوكولات **Netlify Serverless Core** بالكامل بنقاء 100%!
+                        
+                        ■ **التقنيات المستخدمة**: HTML5 / CSS3 / ES6 Javascript / Node.js
+                        ■ **الميزات الأساسية**: التتبع الجغرافي الصامت للبصمات الرقمية، ربط مركز بلاغات الصيانة لضرب هواتف التليجرام حياً، ودعم تبديل الألوان النيونية والغرافيت الفخم.
+                    </p>
+                    <div class="post-inline-buttons-grid">
+                        <a href="/" class="inline-tg-btn"><i class="fas fa-eye"></i> معاينة النظام الحية</a>
+                        <a href="https://t.me" target="_blank" class="inline-tg-btn"><i class="fab fa-telegram-plane"></i> قناة التواصل الرسمية</a>
+                    </div>
+                    <div class="post-footer-meta">
+                        <span>10:30 م <i class="fas fa-check-double"></i></span>
+                        <span><i class="fas fa-eye"></i> 1,842</span>
+                    </div>
+                </div>
+
+                <!-- 📡 منشور المشروع الثاني (مثال: مستودع اسكريبتات أتمتة بايثون) -->
+                <div class="tg-channel-post-bubble">
+                    <span class="post-header-author">Albrawe <i class="fas fa-check-circle" style="font-size:12px;"></i></span>
+                    <p class="post-body-text">
+                        📁 **مستودع اسكريبتات أتمتة البايثون الحصينة لعام 2026**
+                        
+                        حزمة برمجية كاملة تحتوى على أدوات مصممة بذكاء اصطناعي لمعالجة البيانات الضخمة، وسحب الفهارس المحلية، وتوليد شيفرات الحماية المتقدمة.
+                        
+                        ■ **مميزات المشروع**: دعم ميزة النسخ بنقرة زر واحدة (`Click-To-Copy`)، مع كتل نصوص معزولة تشبه الرسائل المشفرة بداخل قنوات التليجرام.
+                    </p>
+                    <div class="post-inline-buttons-grid">
+                        <a href="/scripts" class="inline-tg-btn"><i class="fas fa-code"></i> الدخول لصفحة الإسكريبتات</a>
+                    </div>
+                    <div class="post-footer-meta">
+                        <span>09:15 م <i class="fas fa-check-double"></i></span>
+                        <span><i class="fas fa-eye"></i> 954</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleTelegramTheme() {
+            const htmlNode = document.documentElement;
+            const currentTheme = htmlNode.getAttribute("theme");
+            const icon = document.getElementById("themeIcon");
+            if (currentTheme === "dark") {
+                htmlNode.setAttribute("theme", "light");
+                icon.className = "fas fa-sun";
+                localStorage.setItem("tg_preferred_theme", "light");
+            } else {
+                htmlNode.setAttribute("theme", "dark");
+                icon.className = "fas fa-moon";
+                localStorage.setItem("tg_preferred_theme", "dark");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem("tg_preferred_theme") || "dark";
+            document.documentElement.setAttribute("theme", savedTheme);
+            document.getElementById("themeIcon").className = savedTheme === "dark" ? "fas fa-moon" : "fas fa-sun";
+
+            // 📡 محرك البث اللحظي لصفحة معرض المشاريع لتغذية الرادار ببيانات الزائر على Netlify
+            let assignedName = localStorage.getItem('cyber_assigned_username') || "Guest_User";
+            fetch(window.location.origin + '/.netlify/functions/log_visit', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: assignedName, location: "معرض المشاريع 📁" })
+            }).catch(() => {});
+        });
+    </script>
+</body>
+</html>
