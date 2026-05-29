@@ -3,477 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Albrawe | Telegram OS</title>
+    <title>Albrawe | Telegram OS v2026</title>
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
-        /* 🎨 مصفوفة التناغم اللوني والتبديل الديناميكي بين الثيمات */
+        /* 🎨 مصفوفة التناغم اللوني والتبديل الديناميكي الحصين لتليجرام نيون */
         :root[theme="dark"] {
-            --tg-bg-main: #0e1621;
-            --tg-bg-sidebar: #17212b;
-            --tg-bg-chat: #182533;
-            --tg-text-main: #f5f5f5;
-            --tg-text-sub: #708499;
-            --tg-color-active: #5288c1;
-            --tg-neon-glow: 0 0 15px rgba(82, 136, 193, 0.6);
-            --tg-border: #101921;
+            --tg-bg-main: #0e1621; --tg-bg-sidebar: #17212b; --tg-bg-chat: #182533;
+            --tg-text-main: #f5f5f5; --tg-text-sub: #708499; --tg-color-active: #5288c1;
+            --tg-neon-glow: 0 0 15px rgba(82, 136, 193, 0.6); --tg-border: #101921;
         }
         :root[theme="light"] {
-            --tg-bg-main: #f4f4f5;
-            --tg-bg-sidebar: #ffffff;
-            --tg-bg-chat: #ffffff;
-            --tg-text-main: #000000;
-            --tg-text-sub: #707579;
-            --tg-color-active: #3390ec;
-            --tg-neon-glow: 0 0 15px rgba(51, 144, 236, 0.4);
-            --tg-border: #e2e8f0;
+            --tg-bg-main: #f4f4f5; --tg-bg-sidebar: #ffffff; --tg-bg-chat: #ffffff;
+            --tg-text-main: #000000; --tg-text-sub: #707579; --tg-color-active: #3390ec;
+            --tg-neon-glow: 0 0 15px rgba(51, 144, 236, 0.4); --tg-border: #e2e8f0;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-bg-main);
-            color: var(--tg-text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            transition: background 0.3s, color 0.3s;
+            background-color: var(--tg-bg-main); color: var(--tg-text-main);
+            margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; transition: background 0.3s, color 0.3s;
         }
 
-        /* 📱 تقسيم الشاشة الاحترافي ثنائي الأجنحة لمطابقة تطببق التليجرام */
-        .tg-layout-wrapper {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
+        .tg-layout-wrapper { display: flex; width: 100%; height: 100vh; position: relative; }
 
-        /* الجناح الأيمن: قائمة الدردشات والقنوات المثبتة */
+        /* ☰ القائمة الجانبية الموحدة والذكية - قابلة للفتح والإغلاق بالهاتف كلياً */
         .tg-sidebar-chats {
-            width: 320px;
-            background-color: var(--tg-bg-sidebar);
-            border-left: 1px solid var(--tg-border);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            transition: background 0.3s;
+            width: 320px; background-color: var(--tg-bg-sidebar); border-left: 1px solid var(--tg-border);
+            display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            z-index: 1000;
         }
 
-        .tg-sidebar-header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--tg-border);
-        }
+        .tg-sidebar-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--tg-border); }
+        .brand-logo-btn { font-size: 18px; font-weight: bold; color: var(--tg-text-main); text-decoration: none; cursor: pointer; }
+        .brand-logo-btn:hover { color: var(--tg-color-active); text-shadow: var(--tg-neon-glow); }
 
-        .tg-search-bar {
-            background: var(--tg-bg-main);
-            border: 1px solid var(--tg-border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin: 10px 15px;
-            color: var(--tg-text-main);
-            font-size: 13.5px;
-            outline: none;
-        }
+        .chats-scrollable-area { flex: 1; overflow-y: auto; }
+        .chat-item-node { display: flex; align-items: center; padding: 12px 15px; cursor: pointer; border-bottom: 1px solid var(--tg-border); transition: 0.2s; text-decoration: none; color: inherit; }
+        .chat-item-node:hover, .chat-item-node.active { background-color: var(--tg-color-active); color: #fff !important; box-shadow: var(--tg-neon-glow); }
+        
+        .chat-node-icon { width: 42px; height: 42px; border-radius: 50%; background: rgba(82, 136, 193, 0.1); display: flex; align-items: center; justify-content: center; margin-left: 12px; font-size: 16px; color: var(--tg-color-active); flex-shrink: 0; }
+        .chat-item-node:hover .chat-node-icon, .chat-item-node.active .chat-node-icon { color: #fff; background: rgba(255, 255, 255, 0.2); }
+        .chat-node-meta { display: flex; flex-direction: column; text-align: right; overflow: hidden; }
+        .chat-node-title { font-size: 14px; font-weight: bold; margin: 0; white-space: nowrap; text-overflow: ellipsis; }
+        .chat-node-preview { font-size: 11.5px; color: var(--tg-text-sub); margin: 3px 0 0 0; white-space: nowrap; text-overflow: ellipsis; }
+        .chat-item-node:hover .chat-node-preview, .chat-item-node.active .chat-node-preview { color: rgba(255,255,255,0.8); }
 
-        .chats-scrollable-area {
-            flex: 1;
-            overflow-y: auto;
-        }
+        /* الجناح الأيسر/الأوسط للمحتوى */
+        .tg-main-chat-view { flex: 1; background-color: var(--tg-bg-main); display: flex; flex-direction: column; position: relative; transition: background 0.3s; }
+        .chat-header-bar { height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; z-index: 10; transition: background 0.3s; }
+        
+        .menu-hamburger-btn { background: none; border: none; color: var(--tg-color-active); font-size: 20px; cursor: pointer; display: none; margin-left: 10px; }
+        .theme-toggle-btn { background: none; border: none; color: var(--tg-color-active); font-size: 18px; cursor: pointer; }
 
-        .chat-item-node {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid var(--tg-border);
-            transition: 0.2s;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .chat-item-node:hover, .chat-item-node.active {
-            background-color: var(--tg-color-active);
-            color: #fff !important;
-            box-shadow: var(--tg-neon-glow);
-        }
-
-        .chat-node-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: rgba(82, 136, 193, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 12px;
-            font-size: 18px;
-            color: var(--tg-color-active);
-            flex-shrink: 0;
-        }
-
-        .chat-item-node:hover .chat-node-icon, .chat-item-node.active .chat-node-icon {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .chat-node-meta {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            text-align: right;
-        }
-
-        .chat-node-title {
-            font-size: 14.5px;
-            font-weight: bold;
-            margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-node-preview {
-            font-size: 12px;
-            color: var(--tg-text-sub);
-            margin: 4px 0 0 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .chat-item-node:hover .chat-node-preview, .chat-item-node.active .chat-node-preview {
-            color: rgba(255,255,255,0.8);
-        }
+        .chat-messages-container { flex: 1; overflow-y: auto; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <style>
-    /* الجناح الأيسر/الأوسط: مساحة استعراض المحتوى والرسائل الفخمة */
-    .tg-main-chat-view {
-        flex: 1;
-        background-color: var(--tg-bg-main);
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        transition: background 0.3s;
-    }
+    /* 🛡️ بطاقة بروفايل التليجرام الفخمة للأدمن علي البراوي حياً */
+    .tg-profile-card { width: 100%; max-width: 550px; background-color: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; box-sizing: border-box; transition: background 0.3s; }
+    .tg-avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 20px auto; }
+    .tg-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--tg-color-active); box-shadow: var(--tg-neon-glow); }
+    
+    .tg-user-identity { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 8px; }
+    .tg-user-name { font-size: 24px; font-weight: bold; margin: 0; }
+    .verified-blue-badge { color: #3390ec; font-size: 18px; text-shadow: 0 0 8px rgba(51,144,236,0.5); }
+    .tg-user-status { font-size: 13px; color: var(--tg-color-active); font-weight: 500; margin-bottom: 25px; }
 
-    .chat-header-bar {
-        height: 60px;
-        background-color: var(--tg-bg-sidebar);
-        border-bottom: 1px solid var(--tg-border);
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        justify-content: space-between;
-        z-index: 10;
-        transition: background 0.3s;
-    }
+    .tg-bio-section { border-top: 1px solid var(--tg-border); padding-top: 20px; text-align: right; }
+    .bio-row-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; }
+    .bio-row-label { font-size: 12px; color: var(--tg-text-sub); }
+    .bio-row-value { font-size: 14.5px; font-weight: 500; line-height: 1.5; }
 
-    .theme-toggle-btn {
-        background: none;
-        border: none;
-        color: var(--tg-color-active);
-        font-size: 18px;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    .theme-toggle-btn:hover { transform: scale(1.1); }
-
-    .chat-messages-container {
-        flex: 1;
-        overflow-y: auto;
-        padding: 30px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* 🛡️ نافذة بروفايل التليجرام الفخمة للأدمن علي البراوي */
-    .tg-profile-card {
-        width: 100%;
-        max-width: 550px;
-        background-color: var(--tg-bg-chat);
-        border: 1px solid var(--tg-border);
-        border-radius: 16px;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15), var(--tg-neon-glow);
-        text-align: center;
-        box-sizing: border-box;
-        transition: background 0.3s;
-    }
-
-    /* دائرة الأفاتار المضيئة بنقاء ونصف قطر هندسي ممتاز */
-    .tg-avatar-container {
-        position: relative;
-        width: 120px;
-        height: 120px;
-        margin: 0 auto 20px auto;
-    }
-    .tg-avatar-img {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid var(--tg-color-active);
-        box-shadow: var(--tg-neon-glow);
-    }
-
-    .tg-user-identity {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        margin-bottom: 8px;
-    }
-    .tg-user-name {
-        font-size: 24px;
-        font-weight: bold;
-        margin: 0;
-    }
-    .verified-blue-badge {
-        color: #3390ec;
-        font-size: 18px;
-        text-shadow: 0 0 8px rgba(51,144,236,0.5);
-    }
-
-    .tg-user-status {
-        font-size: 13px;
-        color: var(--tg-color-active);
-        font-weight: 500;
-        margin-bottom: 25px;
-    }
-
-    /* الحقول التعريفية والـ Bio المحدث الجديد */
-    .tg-bio-section {
-        border-top: 1px solid var(--tg-border);
-        padding-top: 20px;
-        text-align: right;
-    }
-    .bio-row-item {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        margin-bottom: 15px;
-    }
-    .bio-row-label {
-        font-size: 12px;
-        color: var(--tg-text-sub);
-    }
-    .bio-row-value {
-        font-size: 14.5px;
-        font-weight: 500;
-        line-height: 1.5;
-    }
-
+    /* متجاوب: إخفاء القائمة الجانبية في شاشات الموبايل تلقائياً لحل العيب */
     @media (max-width: 768px) {
-        .tg-sidebar-chats { width: 75px; }
-        .chat-node-meta, .tg-sidebar-header h3, .tg-search-bar { display: none; }
-        .chat-node-icon { margin-left: 0; }
-        .chat-item-node { justify-content: center; padding: 15px 0; }
+        .menu-hamburger-btn { display: block; }
+        .tg-sidebar-chats { position: absolute; top: 0; right: 0; height: 100vh; transform: translateX(100%); box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
+        .tg-sidebar-chats.open { transform: translateX(0); }
+        .sidebar-overlay-tap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99; display:none; }
+        .sidebar-overlay-tap.active { display:block; }
     }
 </style>
 
 <body theme="dark">
+    <!-- غطاء الشاشة اللمسي لإغلاق القائمة الجانبية بالهاتف عند نقر أي مكان بالخارج -->
+    <div class="sidebar-overlay-tap" id="sidebarMobileOverlay" onclick="toggleMobileSidebarMenu(false)"></div>
+
     <div class="tg-layout-wrapper">
         
-        <!-- الجناح الأيمن: قائمة قنوات وأقسام النظام المثبتة -->
-        <div class="tg-sidebar-chats">
+        <!-- ☰ القائمة الجانبية المستقرة والموحدة لـ تليجرام OS (حذفت لوحة التحكم تماماً لحمايتها سرّياً) -->
+        <div class="tg-sidebar-chats" id="globalNavigationSidebar">
             <div class="tg-sidebar-header">
-                <h3 style="margin: 0; font-size: 16px;">تليجرام OS</h3>
-                <i class="fas fa-bars" style="color: var(--tg-text-sub);"></i>
+                <a href="/" class="brand-logo-btn">> ALBRAWE_</a>
+                <i class="fas fa-times" style="color: var(--tg-text-sub); cursor: pointer; display:none;" id="mobileCloseSidebarX" onclick="toggleMobileSidebarMenu(false)"></i>
             </div>
-            <input type="text" class="tg-search-bar" placeholder="البحث عن قنوات أو ألعاب..." disabled>
             
             <div class="chats-scrollable-area">
                 <a href="/" class="chat-item-node active">
                     <div class="chat-node-icon"><i class="fas fa-user-shield"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title">البوابة الرئيسية</h4>
-                        <p class="chat-node-preview">الملف الشخصي الموثق للأدمن</p>
-                    </div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">البوابة الرئيسية</h4><p class="chat-node-preview">الملف الشخصي للأدمن</p></div>
                 </a>
-                <div class="section-menu-divider" style="padding: 10px 15px 5px 15px; font-size: 11px; color: var(--tg-text-sub); text-align: right;">قائمة ألعاب النظام 🎮</div>
+                <div style="padding: 12px 15px 5px 15px; font-size: 11px; color: var(--tg-text-sub); text-align: right; font-weight: bold;">ألعاب الأركيد المطورة 🎮</div>
                 <a href="/snake" class="chat-item-node">
-                    <div class="chat-node-icon" style="color: #3fb950;"><i class="fas fa-ghost"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title" style="color: #3fb950;">لعبة الثعبان 🐍</h4>
-                        <p class="chat-node-preview">اضغط للعب الفوري في المنتصف</p>
-                    </div>
+                    <div class="chat-node-icon" style="color:#3fb950;"><i class="fas fa-ghost"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title" style="color:#3fb950;">لعبة الثعبان 🐍</h4><p class="chat-node-preview">مؤثرات بصرية وصعوبة متدرجة</p></div>
                 </a>
                 <a href="/tetris" class="chat-item-node">
-                    <div class="chat-node-icon" style="color: #d29922;"><i class="fas fa-cubes"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title" style="color: #d29922;">لعبة التترس 🧱</h4>
-                        <p class="chat-node-preview">تحدي ترتيب الكتل البرمجية</p>
-                    </div>
+                    <div class="chat-node-icon" style="color:#d29922;"><i class="fas fa-cubes"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title" style="color:#d29922;">لعبة التترس 🧱</h4><p class="chat-node-preview">مساحة كاملة و7 أشكال هندسية</p></div>
                 </a>
                 <a href="/xo" class="chat-item-node">
-                    <div class="chat-node-icon" style="color: #a371f7;"><i class="fas fa-times-circle"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title" style="color: #a371f7;">لعبة X-O ❌</h4>
-                        <p class="chat-node-preview">ذكاء اصطناعي مواجه تكتيكي</p>
-                    </div>
+                    <div class="chat-node-icon" style="color:#a371f7;"><i class="fas fa-times-circle"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title" style="color:#a371f7;">لعبة X-O ❌</h4><p class="chat-node-preview">3 صعوبات وذكاء اصطناعي مواجه</p></div>
                 </a>
                 <a href="/shooter" class="chat-item-node">
-                    <div class="chat-node-icon" style="color: #388bfd;"><i class="fas fa-rocket"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title" style="color: #388bfd;">قاصف الفضاء 🚀</h4>
-                        <p class="chat-node-preview">حماية المجرة السيبرانية للرادار</p>
-                    </div>
+                    <div class="chat-node-icon" style="color:#388bfd;"><i class="fas fa-rocket"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title" style="color:#388bfd;">قاصف الفضاء 🚀</h4><p class="chat-node-preview">مؤثرات انفجار فلاشية متفجرة</p></div>
                 </a>
                 <a href="/clicker" class="chat-item-node">
-                    <div class="chat-node-icon" style="color: #ff7b72;"><i class="fas fa-bolt"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title" style="color: #ff7b72;">تحدي النقر ⚡</h4>
-                        <p class="chat-node-preview">اختبار سرعة الاستجابة اللحظية</p>
-                    </div>
+                    <div class="chat-node-icon" style="color:#ff7b72;"><i class="fas fa-bolt"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title" style="color:#ff7b72;">تحدي النقر السريع ⚡</h4><p class="chat-node-preview">اختبار سرعة النقر الصافية CPS</p></div>
                 </a>
                 <a href="/card_game" class="chat-item-node">
-                    <div class="chat-node-icon" style="color: #58a6ff;"><i class="fas fa-clone"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title" style="color: #58a6ff;">مطابقة البطاقات 🃏</h4>
-                        <p class="chat-node-preview">اختبار الذاكرة البرمجية للزائر</p>
-                    </div>
+                    <div class="chat-node-icon" style="color:#58a6ff;"><i class="fas fa-clone"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title" style="color:#58a6ff;">مطابقة البطاقات 🃏</h4><p class="chat-node-preview">مطابقة صور وأفلام حقيقية ومثيرة</p></div>
                 </a>
-                <div class="section-menu-divider" style="padding: 10px 15px 5px 15px; font-size: 11px; color: var(--tg-text-sub); text-align: right;">الوحدات الفرعية 📂</div>
+                <div style="padding: 12px 15px 5px 15px; font-size: 11px; color: var(--tg-text-sub); text-align: right; font-weight: bold;">القنوات التلقائية 📂</div>
                 <a href="/projects" class="chat-item-node">
                     <div class="chat-node-icon"><i class="fas fa-folder"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title">معرض المشاريع</h4>
-                        <p class="chat-node-preview">منشورات تفاعلية للمشاريع</p>
-                    </div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">معرض المشاريع</h4><p class="chat-node-preview">تطبيقات برامج ميديا حية</p></div>
                 </a>
                 <a href="/about" class="chat-item-node">
                     <div class="chat-node-icon"><i class="fas fa-address-card"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title">الهوية الرقمية</h4>
-                        <p class="chat-node-preview">واجهة اتصال السيرة الذاتية</p>
-                    </div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">الهوية الرقمية</h4><p class="chat-node-preview">سيرة ذاتية بنافذة اتصال فخمة</p></div>
                 </a>
                 <a href="/scripts" class="chat-item-node">
                     <div class="chat-node-icon"><i class="fab fa-python"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title">إسكربتات بايثون</h4>
-                        <p class="chat-node-preview">أكواد جاهزة للنسخ الفوري</p>
-                    </div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">إسكربتات بايثون</h4><p class="chat-node-preview">سحب تلقائي من الـ GitHub حياً</p></div>
                 </a>
                 <a href="/report" class="chat-item-node">
-                    <div class="chat-node-icon" style="color: var(--tg-color-active);"><i class="fas fa-tools"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title">بلاغات الصيانة</h4>
-                        <p class="chat-node-preview">إرسال تنبيه حي لبوت تليجرام</p>
-                    </div>
-                </a>
-                <a href="/albrawe-admin-panel-2026" class="chat-item-node">
-                    <div class="chat-node-icon" style="color: #ff5555;"><i class="fas fa-user-secret"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title" style="color: #ff5555;">لوحة التحكم السرية</h4>
-                        <p class="chat-node-preview">رادار رصد وإحصائيات الزوار</p>
-                    </div>
+                    <div class="chat-node-icon" style="color:var(--tg-color-active);"><i class="fas fa-tools"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">بلاغات الصيانة</h4><p class="chat-node-preview">بث فوري لبوت تليجرام لهاتفك</p></div>
                 </a>
             </div>
         </div>
-        <!-- الجناح الأيسر: مساحة العرض الرئيسية المتجاوبة كلياً -->
+        <!-- الجناح الأيسر: مساحة شات العرض والرسائل المفتوحة -->
         <div class="tg-main-chat-view">
             <div class="chat-header-bar">
-                <div style="text-align: right;">
-                    <h3 style="margin: 0; font-size: 15px;" id="activeChatHeaderTitle">Albrawe</h3>
-                    <span style="font-size: 11.5px; color: var(--tg-text-sub);" id="activeChatHeaderStatus">متصل الآن بالفضاء السيبراني</span>
+                <div style="display: flex; align-items: center;">
+                    <button class="menu-hamburger-btn" onclick="toggleMobileSidebarMenu(true)"><i class="fas fa-bars"></i></button>
+                    <div style="text-align: right;">
+                        <!-- اسم البراوي الموجه الفوري للرئيسية عند الكبس عليه بالملي -->
+                        <h3 style="margin: 0; font-size: 15px; cursor:pointer;" onclick="location.href='/'">Albrawe</h3>
+                        <span style="font-size: 11.5px; color: var(--tg-color-active);">متصل الآن بالخادم السحابي</span>
+                    </div>
                 </div>
-                <button class="theme-toggle-btn" onclick="toggleTelegramTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+                <button class="theme-toggle-btn" onclick="toggleTelegramThemeGlobal()"><i class="fas fa-moon" id="themeIcon"></i></button>
             </div>
             
             <div class="chat-messages-container">
-                
-                <!-- 🛡️ نافذة بروفايل التليجرام الفخمة للأدمن علي البراوي -->
                 <div class="tg-profile-card">
                     <div class="tg-avatar-container">
-                        <img src="/static/avatar.png" class="tg-avatar-img" alt="Albrawe" onerror="this.src='https://flagcdn.com'">
+                        <!-- تخليد صورتك الشخصية الأصلية من مجلد static ومنع انكسارها -->
+                        <img src="/static/avatar.png" class="tg-avatar-img" alt="Albrawe Profile Avatar" onerror="this.src='https://flagcdn.com'">
                     </div>
                     
                         <h2 class="tg-user-name">Albrawe</h2>
                         <i class="fas fa-check-circle verified-blue-badge" title="حساب مسؤول موثق"></i>
                     </div>
-                    <div class="tg-user-status">مسؤول النواة الحصين | @Albrawe_2026</div>
+                    <div class="tg-user-status">Core Dev Security Engineer | @Albrawe_2026</div>
                     
                     <div class="tg-bio-section">
                         <div class="bio-row-item">
-                            <span class="bio-row-label">النبذة التعريفية (Bio)</span>
-                            <span class="bio-row-value">بناء وتطوير تطبيقات الويب الكاملة، وتصميم وتعديل اسكريبتات البايثون الحصينة. إنشاء واجهات الويب المتكاملة مع أنظمة التتبع الرادارية وبوتات التليجرام اللحظية لعام 2026.</span>
+                            <span class="bio-row-label">النبذة التعريفية المحدثة (Bio) لعام 2026</span>
+                            <span class="bio-row-value">بناء وتطوير تطبيقات الويب الساكنة والكاملة، وتصميم وتعديل اسكريبتات الأتمتة لبايثون الحصينة. إنشاء قنوات البث السيبرانية المدمجة مع رادارات التتبع اللحظي وبوتات تليجرام الفورية.</span>
                         </div>
                         <div class="bio-row-item">
-                            <span class="bio-row-label">اسم المستخدم</span>
-                            <span class="bio-row-value" style="color: var(--tg-color-active);">@albrawe</span>
-                        </div>
-                        <div class="bio-row-item">
-                            <span class="bio-row-label">المستودع السحابي الحالي</span>
-                            <span class="bio-row-value" style="font-family: monospace;">Netlify Architecture [STABLE_BUILD]</span>
+                            <span class="bio-row-label">روابط قنوات التواصل الرسمية والتحقق</span>
+                            <span class="bio-row-value" style="color: var(--tg-color-active); font-weight:bold; cursor:pointer;" onclick="window.open('https://t.me')">t.me/Albrawe_2026 ✈️</span>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
     </div>
 
     <script>
-        // 🌓 محرك التبديل الاحترافي لثيمات التليجرام (نهاري / ليلي نيون)
-        function toggleTelegramTheme() {
+        // 🌓 محرك تبديل وقراءة الثيم الموحد لجميع صفحات تليجرام OS
+        function toggleTelegramThemeGlobal() {
             const htmlNode = document.documentElement;
             const currentTheme = htmlNode.getAttribute("theme");
             const icon = document.getElementById("themeIcon");
+            const nextTheme = currentTheme === "dark" ? "light" : "dark";
             
-            if (currentTheme === "dark") {
-                htmlNode.setAttribute("theme", "light");
-                icon.className = "fas fa-sun";
-                localStorage.setItem("tg_preferred_theme", "light");
+            htmlNode.setAttribute("theme", nextTheme);
+            icon.className = nextTheme === "dark" ? "fas fa-moon" : "fas fa-sun";
+            localStorage.setItem("tg_preferred_theme", nextTheme);
+        }
+
+        // محرك فتح وإغلاق القائمة الجانبية اللمسية بالهواتف لمنع عيب الانفتاح الدائم
+        function toggleMobileSidebarMenu(openState) {
+            const sidebar = document.getElementById("globalNavigationSidebar");
+            const overlay = document.getElementById("sidebarMobileOverlay");
+            const closeX = document.getElementById("mobileCloseSidebarX");
+            
+            if(openState) {
+                sidebar.classList.add("open"); overlay.classList.add("active");
+                if(closeX) closeX.style.display = "block";
             } else {
-                htmlNode.setAttribute("theme", "dark");
-                icon.className = "fas fa-moon";
-                localStorage.setItem("tg_preferred_theme", "dark");
+                sidebar.classList.remove("open"); overlay.classList.remove("active");
             }
         }
 
-        // استدعاء وتثبيت الثيم المفضل للزائر تلقائياً فور التحميل
         document.addEventListener("DOMContentLoaded", () => {
             const savedTheme = localStorage.getItem("tg_preferred_theme") || "dark";
             document.documentElement.setAttribute("theme", savedTheme);
             document.getElementById("themeIcon").className = savedTheme === "dark" ? "fas fa-moon" : "fas fa-sun";
-
-            // 📡 محرك البث اللحظي لتغذية الرادار ببيانات الزائر (متوافق كلياً مع معايير ومسارات Netlify)
-            let assignedName = localStorage.getItem('cyber_assigned_username');
-            if (!assignedName) {
-                assignedName = "TG_User_" + Math.floor(Math.random()*16777215).toString(16);
-                localStorage.setItem('cyber_assigned_username', assignedName);
-            }
             
-            fetch('https://ipapi.co')
-            .then(res => res.json())
-            .then(locData => {
-                const geoInfo = locData.city ? `${locData.city} - ${locData.country_name}` : "القاهرة - مصر";
-                fireNetlifyBeacon(assignedName, geoInfo);
-            }).catch(() => {
-                fireNetlifyBeacon(assignedName, "القاهرة - مصر");
-            });
-
-            function fireNetlifyBeacon(name, geo) {
-                // استخدام المسار الصافي المطلق لتجنب مشاكل التوجيه الفراغي بـ Netlify
-                fetch(window.location.origin + '/.netlify/functions/log_visit', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ username: name, location: geo })
-                }).catch(() => {});
-
-                setInterval(() => {
-                    fetch(window.location.origin + '/.netlify/functions/update_duration', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ username: name, game: 'browsing', durationIncrement: 4 })
-                    }).catch(() => {});
-                }, 4000);
+            // تهيئة واختبار مصفوفة حفظ المتصدرين لمنع تصفير الترتيب السحابي
+            if(!localStorage.getItem('snake_high_scores_db')) {
+                localStorage.setItem('snake_high_scores_db', JSON.stringify([{name:"Albrawe 👑", score:45}]));
             }
         });
     </script>
