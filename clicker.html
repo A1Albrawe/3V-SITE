@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تحدي النقر السريع | تليجرام OS</title>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* 🎨 مصفوفة التناغم اللوني للتليجرام غرافيت والتبديل الديناميكي */
+        :root[theme="dark"] {
+            --tg-bg-main: #0e1621; --tg-bg-sidebar: #17212b; --tg-bg-chat: #182533;
+            --tg-text-main: #f5f5f5; --tg-text-sub: #708499; --tg-color-active: #ff7b72;
+            --tg-neon-glow: 0 0 15px rgba(255, 123, 114, 0.6); --tg-border: #101921;
+        }
+        :root[theme="light"] {
+            --tg-bg-main: #f4f4f5; --tg-bg-sidebar: #ffffff; --tg-bg-chat: #ffffff;
+            --tg-text-main: #000000; --tg-text-sub: #707579; --tg-color-active: #ff7b72;
+            --tg-neon-glow: 0 0 15px rgba(255, 123, 114, 0.4); --tg-border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--tg-bg-main); color: var(--tg-text-main);
+            margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; transition: background 0.3s;
+        }
+
+        .tg-layout-wrapper { display: flex; width: 100%; height: 100vh; }
+
+        /* القائمة الجانبية الثابتة */
+        .tg-sidebar-chats {
+            width: 320px; background-color: var(--tg-bg-sidebar); border-left: 1px solid var(--tg-border);
+            display: flex; flex-direction: column; flex-shrink: 0; transition: background 0.3s;
+        }
+        .tg-sidebar-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--tg-border); }
+        .chats-scrollable-area { flex: 1; overflow-y: auto; }
+        .chat-item-node { display: flex; align-items: center; padding: 12px 15px; cursor: pointer; border-bottom: 1px solid var(--tg-border); transition: 0.2s; text-decoration: none; color: inherit; }
+        .chat-item-node:hover, .chat-item-node.active { background-color: var(--tg-color-active); color: #fff !important; box-shadow: var(--tg-neon-glow); }
+        .chat-node-icon { width: 45px; height: 45px; border-radius: 50%; background: rgba(255, 123, 114, 0.1); display: flex; align-items: center; justify-content: center; margin-left: 12px; font-size: 18px; color: var(--tg-color-active); flex-shrink: 0; }
+        .chat-node-meta { display: flex; flex-direction: column; text-align: right; }
+        .chat-node-title { font-size: 14.5px; font-weight: bold; margin: 0; }
+        .chat-node-preview { font-size: 12px; color: var(--tg-text-sub); margin: 4px 0 0 0; }
+
+        /* الجناح الأيسر: ساحة اللعبة الرئيسية */
+        .tg-main-chat-view { flex: 1; background-color: var(--tg-bg-main); display: flex; flex-direction: column; position: relative; }
+        .chat-header-bar { height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; z-index: 10; }
+        .chat-messages-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
+
+        /* 🎮 لوحة الجيم بلاي الخاصة بتحدي النقر */
+        .game-panel-layout { display: flex; gap: 20px; width: 100%; max-width: 950px; justify-content: center; align-items: flex-start; margin-top: 10px; }
+        .clicker-box-container { width: 400px; height: 400px; background-color: #050b14; border: 3px solid var(--tg-color-active); border-radius: 12px; box-shadow: var(--tg-neon-glow); position: relative; overflow: hidden; cursor: crosshair; }
+
+        /* زر النقر السيبراني المشع العشوائي */
+        .cyber-target-btn { width: 65px; height: 65px; background-color: var(--tg-color-active); border: 2px solid #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: bold; position: absolute; cursor: pointer; box-shadow: var(--tg-neon-glow); transition: transform 0.1s ease; -webkit-user-select: none; user-select: none; }
+        .cyber-target-btn:active { transform: scale(0.9); }
+
+        .leaderboard-sidebar-card { width: 280px; background-color: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 12px; padding: 15px; box-sizing: border-box; text-align: right; }
+        .leader-score-row { display: flex; justify-content: space-between; padding: 8px 4px; border-bottom: 1px dashed var(--tg-border); font-size: 13.5px; }
+        .leader-score-row:last-child { border-bottom: none; }
+        .rank-badge { font-weight: bold; color: var(--tg-color-active); margin-left: 6px; }
+
+        .tg-modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index: 20000; display: none; align-items: center; justify-content: center; }
+        .tg-modal-box { background: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 14px; padding: 25px; width: 90%; max-width: 360px; text-align: center; box-shadow: var(--tg-neon-glow); }
+
+        @media (max-width: 850px) {
+            .game-panel-layout { flex-direction: column; align-items: center; }
+            .leaderboard-sidebar-card { width: 100%; max-width: 340px; }
+            .clicker-box-container { width: 340px; height: 340px; }
+            .tg-sidebar-chats { width: 75px; } .chat-node-meta, .tg-sidebar-header h3 { display: none; } .chat-item-node { justify-content: center; }
+        }
+    </style>
+</head>
+<body theme="dark">
+
+    <!-- 🏆 صندوق حاقن وحفظ نقاط التحدي السحابي للزوار -->
+    <div class="tg-modal-overlay" id="scoreModalOverlay">
+        <div class="tg-modal-box">
+            <i class="fas fa-bolt" style="font-size: 40px; color: #ffd700; margin-bottom: 12px;"></i>
+            <h3 style="margin: 0; font-size: 18px;">انتهى مؤقت المرحلة! ⏳</h3>
+            <p style="font-size: 13px; color: var(--tg-text-sub); margin: 6px 0 15px 0;">مجموع النقرات السيبرانية الناجحة: <span id="finalScoreLabel" style="font-weight:bold; color:var(--tg-color-active);">0</span></p>
+            <input type="text" id="playerHighScoreName" style="width:100%; padding:10px; background:var(--tg-bg-main); border:1px solid var(--tg-border); border-radius:8px; color:var(--tg-text-main); text-align:center; font-family:inherit; outline:none; margin-bottom:15px;" placeholder="اكتب اسمك لتسجيل الترتيب..." maxlength="15" autocomplete="off">
+            <button class="tg-submit-btn" style="width:100%; padding:12px; background:var(--tg-color-active); color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="submitScoreToCloudServer()">تثبيت النتيجة سحابياً 🚀</button>
+        </div>
+    </div>
+
+    <div class="tg-layout-wrapper">
+        
+        <!-- القائمة الجانبية المستقرة للملاحة -->
+        <div class="tg-sidebar-chats">
+            <div class="tg-sidebar-header">
+                <h3 style="margin: 0; font-size: 16px;">تليجرام OS</h3>
+                <i class="fas fa-bars" style="color: var(--tg-text-sub);"></i>
+            </div>
+            <div class="chats-scrollable-area">
+                <a href="/" class="chat-item-node">
+                    <div class="chat-node-icon"><i class="fas fa-user-shield"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">البوابة الرئيسية</h4><p class="chat-node-preview">الملف الشخصي للأدمن</p></div>
+                </a>
+                <div class="section-menu-divider" style="padding: 10px 15px 5px 15px; font-size: 11px; color: var(--tg-text-sub); text-align: right;">ألعاب النظام 🎮</div>
+                <a href="/snake" class="chat-item-node">
+                    <div class="chat-node-icon" style="color: #3fb950;"><i class="fas fa-ghost"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">لعبة الثعبان 🐍</h4><p class="chat-node-preview">تدرج صعوبة وحفظ سحابي</p></div>
+                </a>
+                <a href="/tetris" class="chat-item-node">
+                    <div class="chat-node-icon" style="color: #d29922;"><i class="fas fa-cubes"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">لعبة التترس 🧱</h4><p class="chat-node-preview">أزرار لمس نيونية وحفظ فوري</p></div>
+                </a>
+                <a href="/xo" class="chat-item-node">
+                    <div class="chat-node-icon" style="color: #a371f7;"><i class="fas fa-times-circle"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">لعبة X-O ❌</h4><p class="chat-node-preview">ذكاء مواجهة لمسي فائق</p></div>
+                </a>
+                <a href="/shooter" class="chat-item-node">
+                    <div class="chat-node-icon" style="color: #388bfd;"><i class="fas fa-rocket"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">قاصف الفضاء 🚀</h4><p class="chat-node-preview">دعم كامل للمس وصعوبة تصاعدية</p></div>
+                </a>
+                <a href="/clicker" class="chat-item-node active">
+                    <div class="chat-node-icon" style="color: #ff7b72;"><i class="fas fa-bolt"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title" style="color: #ff7b72;">تحدي النقر ⚡</h4><p class="chat-node-preview">سرعة نقر لمسي وحفظ فوري للترتيب</p></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ساحة اللعبة المركزية واستقبال نقرات الأزرار اللمسية اللحظية -->
+        <div class="tg-main-chat-view">
+            <div class="chat-header-bar">
+                <div style="text-align: right;">
+                    <h3 style="margin: 0; font-size: 15px;">قناة تحدي النقر السريع</h3>
+                    <span style="font-size: 11.5px; color: #ff5555; font-weight: bold;" id="gameDifficultyStatus">الوقت المتبقي: 15.0 ثانية</span>
+                </div>
+                <div style="font-weight: bold; font-size: 15px;">النقرات: <span id="liveScoreCounter" style="color:var(--tg-color-active);">0</span></div>
+            </div>
+            
+            <div class="chat-messages-container">
+                
+                <button class="tg-submit-btn" id="startClickerBtnNode" style="max-width:200px; margin-bottom:15px;" onclick="startXOClickerGame()">إطلاق واختبار العداد ⚡</button>
+
+                <div class="game-panel-layout">
+                    <div class="leaderboard-sidebar-card">
+                        <h4 style="margin: 0 0 12px 0; font-size: 14.5px; color: var(--tg-color-active); text-align: center; border-bottom: 1px dashed var(--tg-border); padding-bottom: 6px;"><i class="fas fa-bolt"></i> أسرع النقارين سحابياً</h4>
+                        <div id="leaderboardRowsContainer">
+                            <p style='color:var(--tg-text-sub); font-size:12px; text-align:center;'>جاري سحب لوحة البيانات... 🛰️</p>
+                        </div>
+                    </div>
+
+                    <!-- حاوية القماش والمساحة العشوائية لإلقاء زر الهدف اللمسي الصافي -->
+                    <div class="clicker-box-container" id="clickerZoneField">
+                        <div class="cyber-target-btn" id="targetClickBtn" style="display:none;" onclick="handleTargetButtonTap()">⚡</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <script>
+        // محرك الصوت السيبراني لتوليد الذبذبات التكتيكية حماية للهاتف
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSynthesizedSound(freq, type, duration) {
+            try {
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + duration);
+            } catch(e){}
+        }
+
+        let score = 0; let timeLeft = 15.0; let isGameRunning = false; let countdownTimer;
+        const targetBtn = document.getElementById("targetClickBtn");
+        const container = document.getElementById("clickerZoneField");
+
+        function startXOClickerGame() {
+            if (isGameRunning) return;
+            score = 0; timeLeft = 15.0; isGameRunning = true;
+            document.getElementById("liveScoreCounter").innerText = score;
+            document.getElementById("startClickerBtnNode").style.display = "none";
+            targetBtn.style.display = "flex";
+            
+            repositionTargetButton();
+            playSynthesizedSound(500, "sine", 0.15);
+
+            countdownTimer = setInterval(() => {
+                timeLeft -= 0.1;
+                if(timeLeft <= 0) {
+                    timeLeft = 0; clearInterval(countdownTimer);
+                    endClickerGameRound();
+                }
+                document.getElementById("gameDifficultyStatus").innerText = `الوقت المتبقي: ${timeLeft.toFixed(1)} ثانية`;
+                
+                // نبضة صوتية تحذيرية في آخر 3 ثوانٍ
+                if (timeLeft <= 3.0 && timeLeft > 0) {
+                    playSynthesizedSound(800, "sine", 0.03);
+                }
+            }, 100);
+        }
+
+        function handleTargetButtonTap() {
+            if (!isGameRunning) return;
+            score++;
+            document.getElementById("liveScoreCounter").innerText = score;
+            playSynthesizedSound(600, "triangle", 0.05); // صوت نقرة ناجحة
+            
+            // زيادة الصعوبة التصاعدية: نقل الزر آلياً بشكل عشوائي عند كل نقرة صحيحة بالملي
+            repositionTargetButton();
+        }
+
+        function repositionTargetButton() {
+            const maxX = container.clientWidth - targetBtn.clientWidth - 10;
+            const maxY = container.clientHeight - targetBtn.clientHeight - 10;
+            
+            const randomX = Math.max(10, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(10, Math.floor(Math.random() * maxY));
+            
+            targetBtn.style.left = randomX + "px";
+            targetBtn.style.top = randomY + "px";
+        }
+
+        function endClickerGameRound() {
+            isGameRunning = false;
+            targetBtn.style.display = "none";
+            document.getElementById("startClickerBtnNode").style.display = "inline-block";
+            playSynthesizedSound(180, "sawtooth", 0.5); // صوت انتهاء الجولة
+
+            document.getElementById("finalScoreLabel").innerText = score;
+            document.getElementById("scoreModalOverlay").style.display = "flex";
+        }
+
+        function getCloudLeaderboard() {
+            let db = JSON.parse(localStorage.getItem('clicker_high_scores_db') || "[]");
+            if(db.length === 0) {
+                db = [{name: "Albrawe 👑", score: 38}, {name: "إصبع_البرق", score: 25}];
+                localStorage.setItem('clicker_high_scores_db', JSON.stringify(db));
+            }
+            db.sort((a,b) => b.score - a.score);
+            let rowsHtml = "";
+            db.slice(0, 5).forEach((p, idx) => {
+                rowsHtml += `<div class='leader-score-row'><span><span class='rank-badge'>#${idx+1}</span> ${p.name}</span><span style='color:var(--tg-color-active); font-weight:bold;'>${p.score} نقرة</span></div>`;
+            });
+            document.getElementById("leaderboardRowsContainer").innerHTML = rowsHtml;
+        }
+
+        function submitScoreToCloudServer() {
+            const rawName = document.getElementById("playerHighScoreName").value.trim();
+            const name = rawName || "ناقر مجهول";
+            let db = JSON.parse(localStorage.getItem('clicker_high_scores_db') || "[]");
+            db.push({name: name, score: score}); localStorage.setItem('clicker_high_scores_db', JSON.stringify(db));
+            
+            let assignedName = localStorage.getItem('cyber_assigned_username') || "Guest_User";
+            fetch(window.location.origin + '/.netlify/functions/update_duration', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: assignedName, game: 'clicker', durationIncrement: score })
+            }).catch(() => {});
+
+            document.getElementById("scoreModalOverlay").style.display = "none";
+            alert("🟢 تم تخليد نتيجتك بنجاح بداخل قائمة الصدارة لـ تليجرام OS!");
+            location.reload();
+        }
+
+        getCloudLeaderboard();
+    </script>
+</body>
+</html>
