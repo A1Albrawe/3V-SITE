@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>الهوية الرقمية | Telegram OS</title>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* 🎨 مصفوفة التناغم اللوني والتبديل الديناميكي لتليجرام */
+        :root[theme="dark"] {
+            --tg-bg-main: #0e1621;
+            --tg-bg-sidebar: #17212b;
+            --tg-bg-chat: #182533;
+            --tg-text-main: #f5f5f5;
+            --tg-text-sub: #708499;
+            --tg-color-active: #5288c1;
+            --tg-neon-glow: 0 0 15px rgba(82, 136, 193, 0.6);
+            --tg-border: #101921;
+        }
+        :root[theme="light"] {
+            --tg-bg-main: #f4f4f5;
+            --tg-bg-sidebar: #ffffff;
+            --tg-bg-chat: #ffffff;
+            --tg-text-main: #000000;
+            --tg-text-sub: #707579;
+            --tg-color-active: #3390ec;
+            --tg-neon-glow: 0 0 15px rgba(51, 144, 236, 0.4);
+            --tg-border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-bg-main);
+            color: var(--tg-text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .tg-layout-wrapper { display: flex; width: 100%; height: 100vh; }
+
+        /* القائمة الجانبية الثابتة الموحدة */
+        .tg-sidebar-chats {
+            width: 320px;
+            background-color: var(--tg-bg-sidebar);
+            border-left: 1px solid var(--tg-border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+
+        .tg-sidebar-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--tg-border);
+        }
+
+        .chats-scrollable-area { flex: 1; overflow-y: auto; }
+
+        .chat-item-node {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--tg-border);
+            transition: 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .chat-item-node:hover, .chat-item-node.active {
+            background-color: var(--tg-color-active);
+            color: #fff !important;
+            box-shadow: var(--tg-neon-glow);
+        }
+
+        .chat-node-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(82, 136, 193, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            font-size: 18px;
+            color: var(--tg-color-active);
+            flex-shrink: 0;
+        }
+        .chat-item-node:hover .chat-node-icon, .chat-item-node.active .chat-node-icon {
+            color: #fff; background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-node-meta { display: flex; flex-direction: column; overflow: hidden; text-align: right; }
+        .chat-node-title { font-size: 14.5px; font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-node-preview { font-size: 12px; color: var(--tg-text-sub); margin: 4px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item-node:hover .chat-node-preview, .chat-item-node.active .chat-node-preview { color: rgba(255,255,255,0.8); }
+    </style>
+</head>
+<style>
+    /* الجناح الأيسر: مساحة عرض بروفايل الاتصال الشامل للمهارات */
+    .tg-main-chat-view {
+        flex: 1;
+        background-color: var(--tg-bg-main);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition: background 0.3s;
+    }
+
+    .chat-header-bar {
+        height: 60px;
+        background-color: var(--tg-bg-sidebar);
+        border-bottom: 1px solid var(--tg-border);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        justify-content: space-between;
+        z-index: 10;
+        transition: background 0.3s;
+    }
+
+    .theme-toggle-btn { background: none; border: none; color: var(--tg-color-active); font-size: 18px; cursor: pointer; }
+
+    .chat-messages-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--tg-bg-main);
+    }
+
+    /* 🛡️ واجهة محاكاة نافذة اتصال التليجرام الفخمة */
+    .tg-call-suite-card {
+        width: 100%;
+        max-width: 580px;
+        background-color: var(--tg-bg-chat);
+        border: 1px solid var(--tg-border);
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        box-sizing: border-box;
+        text-align: center;
+        transition: background 0.3s;
+    }
+
+    .call-avatar-pulse {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 0 auto 15px auto;
+        border: 3px solid var(--tg-color-active);
+        box-shadow: var(--tg-neon-glow);
+        position: relative;
+    }
+    
+    .call-avatar-pulse::after {
+        content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+        border-radius: 50%; border: 2px solid var(--tg-color-active);
+        animation: pulseRing 2s infinite ease-in-out; pointer-events: none; opacity: 0;
+    }
+    @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.3); opacity: 0; } }
+
+    .call-profile-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+    .call-action-grid-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin: 25px 0;
+    }
+
+    .call-round-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: rgba(82, 136, 193, 0.1);
+        border: 1px solid rgba(82, 136, 193, 0.3);
+        color: var(--tg-color-active);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        cursor: pointer;
+        transition: 0.2s;
+        text-decoration: none;
+    }
+    .call-round-btn:hover {
+        background-color: var(--tg-color-active);
+        color: #fff !important;
+        box-shadow: var(--tg-neon-glow);
+        transform: translateY(-2px);
+    }
+
+    /* أشرطة تحميل المهارات النيونية للغرافيت المطور */
+    .skills-suite-section { text-align: right; border-top: 1px solid var(--tg-border); padding-top: 25px; margin-top: 5px; }
+    .skill-bar-node { margin-bottom: 18px; }
+    .skill-meta-info { display: flex; justify-content: space-between; font-size: 13.5px; font-weight: 500; margin-bottom: 6px; }
+    .skill-progress-bg { width: 100%; height: 8px; background-color: var(--tg-bg-main); border-radius: 4px; overflow: hidden; border: 1px solid var(--tg-border); }
+    .skill-progress-fill { height: 100%; background-color: var(--tg-color-active); border-radius: 4px; box-shadow: var(--tg-neon-glow); transition: width 1s ease-in-out; }
+
+    @media (max-width: 768px) {
+        .tg-sidebar-chats { width: 75px; }
+        .chat-node-meta, .tg-sidebar-header h3 { display: none; }
+        .chat-node-icon { margin-left: 0; }
+        .chat-item-node { justify-content: center; padding: 15px 0; }
+    }
+</style>
+
+<body theme="dark">
+    <div class="tg-layout-wrapper">
+        
+        <!-- القائمة الجانبية الموحدة والمستقرة للملاحة -->
+        <div class="tg-sidebar-chats">
+            <div class="tg-sidebar-header">
+                <h3 style="margin: 0; font-size: 16px;">تليجرام OS</h3>
+                <i class="fas fa-bars" style="color: var(--tg-text-sub);"></i>
+            </div>
+            
+            <div class="chats-scrollable-area">
+                <a href="/" class="chat-item-node">
+                    <div class="chat-node-icon"><i class="fas fa-user-shield"></i></div>
+                    <div class="chat-node-meta">
+                        <h4 class="chat-node-title">البوابة الرئيسية</h4>
+                        <p class="chat-node-preview">الملف الشخصي الموثق</p>
+                    </div>
+                </a>
+                <div class="section-menu-divider" style="padding: 10px 15px 5px 15px; font-size: 11px; color: var(--tg-text-sub); text-align: right;">القنوات والوحدات 📂</div>
+                <a href="/projects" class="chat-item-node">
+                    <div class="chat-node-icon"><i class="fas fa-folder"></i></div>
+                    <div class="chat-node-meta">
+                        <h4 class="chat-node-title">معرض المشاريع</h4>
+                        <p class="chat-node-preview">منشورات تفاعلية للمشاريع</p>
+                    </div>
+                </a>
+                <a href="/about" class="chat-item-node active">
+                    <div class="chat-node-icon"><i class="fas fa-address-card"></i></div>
+                    <div class="chat-node-meta">
+                        <h4 class="chat-node-title">الهوية الرقمية</h4>
+                        <p class="chat-node-preview">واجهة اتصال السيرة الذاتية</p>
+                    </div>
+                </a>
+                <a href="/report" class="chat-item-node">
+                    <div class="chat-node-icon" style="color: var(--tg-color-active);"><i class="fas fa-tools"></i></div>
+                    <div class="chat-node-meta">
+                        <h4 class="chat-node-title">بلاغات الصيانة</h4>
+                        <p class="chat-node-preview">إرسال تنبيه حي للبوت</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <!-- الجناح الأيسر: مساحة شات الاتصال الكلية للهوية الرقمية -->
+        <div class="tg-main-chat-view">
+            <div class="chat-header-bar">
+                <div style="text-align: right;">
+                    <h3 style="margin: 0; font-size: 15px;">الهوية البرمجية للمسؤول</h3>
+                    <span style="font-size: 11.5px; color: var(--tg-text-sub);">تشفير البيانات ثنائي الأبعاد مستقر</span>
+                </div>
+                <button class="theme-toggle-btn" onclick="toggleTelegramTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+            </div>
+            
+            <div class="chat-messages-container">
+                <div class="tg-call-suite-card">
+                    <div class="call-avatar-pulse">
+                        <img src="/static/avatar.png" class="call-profile-img" alt="Albrawe" onerror="this.src='https://flagcdn.com'">
+                    </div>
+                    <h2 style="margin: 5px 0; font-size: 22px;">Albrawe <i class="fas fa-check-circle" style="color:var(--tg-color-active); font-size:16px;"></i></h2>
+                    <span style="font-size: 12.5px; color: var(--tg-text-sub);">مكالمة مشفرة بالكامل (End-to-End Encrypted)</span>
+                    
+                    <!-- أزرار اتصال التليجرام التفاعلية لروابط التواصل المباشرة للأدمن -->
+                    <div class="call-action-grid-buttons">
+                        <a href="https://t.me" target="_blank" class="call-round-btn" title="تليجرام حي مسؤول"><i class="fab fa-telegram-plane"></i></a>
+                        <a href="/report" class="call-round-btn" style="color:#ff5555; background-color:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.2);" title="إنهاء وإرسال بلاغ صيانة"><i class="fas fa-phone-slash"></i></a>
+                        <a href="/" class="call-round-btn" title="العودة للرئيسية"><i class="fas fa-home"></i></a>
+                    </div>
+                    
+                    <!-- كتل استعراض مستويات إتقان الأدمن للمهارات البرمجية الأساسية حياً -->
+                    <div class="skills-suite-section">
+                        <h4 style="margin: 0 0 15px 0; font-size: 14.5px; color: var(--tg-color-active);"><i class="fas fa-graduation-cap"></i> ترسانة الخبرات البرمجية والأتمتة الحصينة:</h4>
+                        
+                        <div class="skill-bar-node">
+                            <div class="skill-meta-info"><span>Python (الاسكريبتات وهندسة النواة السحابية)</span><span>95%</span></div>
+                            <div class="skill-progress-bg"><div class="skill-progress-fill" style="width: 95%;"></div></div>
+                        </div>
+                        
+                        <div class="skill-bar-node">
+                            <div class="skill-meta-info"><span>JavaScript (Async ES6 & Node.js Functions)</span><span>90%</span></div>
+                            <div class="skill-progress-bg"><div class="skill-progress-fill" style="width: 90%;"></div></div>
+                        </div>
+                        
+                        <div class="skill-bar-node">
+                            <div class="skill-meta-info"><span>معمارية السيرفرات الساكنة (Netlify Deployment)</span><span>100%</span></div>
+                            <div class="skill-progress-bg"><div class="skill-progress-fill" style="width: 100%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleTelegramTheme() {
+            const htmlNode = document.documentElement;
+            const currentTheme = htmlNode.getAttribute("theme");
+            const icon = document.getElementById("themeIcon");
+            if (currentTheme === "dark") {
+                htmlNode.setAttribute("theme", "light");
+                icon.className = "fas fa-sun";
+                localStorage.setItem("tg_preferred_theme", "light");
+            } else {
+                htmlNode.setAttribute("theme", "dark");
+                icon.className = "fas fa-moon";
+                localStorage.setItem("tg_preferred_theme", "dark");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem("tg_preferred_theme") || "dark";
+            document.documentElement.setAttribute("theme", savedTheme);
+            document.getElementById("themeIcon").className = savedTheme === "dark" ? "fas fa-moon" : "fas fa-sun";
+
+            // 📡 محرك البث اللحظي لصفحة الهوية الرقمية لتغذية الرادار ببيانات الزائر على Netlify
+            let assignedName = localStorage.getItem('cyber_assigned_username') || "Guest_User";
+            fetch(window.location.origin + '/.netlify/functions/log_visit', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: assignedName, location: "الهوية الرقمية 👤" })
+            }).catch(() => {});
+        });
+    </script>
+</body>
+</html>
