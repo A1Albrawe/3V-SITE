@@ -1,373 +1,382 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>إسكربتات بايثون | Telegram OS</title>
+    <title>إسكربتات بايثون | Albrawe Telegram OS</title>
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
-        /* 🎨 مصفوفة التناغم اللوني والتبديل الديناميكي لتليجرام */
-        :root[theme="dark"] {
-            --tg-bg-main: #0e1621;
-            --tg-bg-sidebar: #17212b;
+        /* 🎨 مصفوفة الألوان النيونية والوضع الداكن العسكري - مطابقة تماماً 100% لـ كود الصفحة الرئيسية لمنع الاختلال */
+        :root, html[theme="dark"] {
+            --tg-bg-main: #0e1621; 
+            --tg-bg-sidebar: #17212b; 
             --tg-bg-chat: #182533;
-            --tg-text-main: #f5f5f5;
-            --tg-text-sub: #708499;
-            --tg-color-active: #5288c1;
-            --tg-neon-glow: 0 0 15px rgba(82, 136, 193, 0.6);
+            --tg-text-main: #f5f5f5; 
+            --tg-text-sub: #708499; 
+            --tg-color-active: #2481cc;
             --tg-border: #101921;
-            --tg-code-bg: #111c27;
+
+            /* مسميات تلوين الأيقونات النيونية الحركية الـ 10 المقفلة بالبكسل */
+            --cls-main: #2481cc;
+            --cls-projects: #388bfd;
+            --cls-scripts: #4eef5d;
+            --cls-snake: #3fb950;
+            --cls-tetris: #d29922;
+            --cls-xo: #a371f7;
+            --cls-shooter: #218bff;
+            --cls-clicker: #ff7b72;
+            --cls-card: #58a6ff;
+            --cls-chess: #ffffff;
+            --cls-domino: #00ffcc;
+            --cls-ladder: #ff9900;
+            --cls-about: #f2c94c;
+            --cls-report: #ff5555;
+            --tg-neon-glow: 0 0 15px rgba(36, 129, 204, 0.6);
         }
-        :root[theme="light"] {
-            --tg-bg-main: #f4f4f5;
-            --tg-bg-sidebar: #ffffff;
-            --tg-bg-chat: #ffffff;
-            --tg-text-main: #000000;
-            --tg-text-sub: #707579;
-            --tg-color-active: #3390ec;
-            --tg-neon-glow: 0 0 15px rgba(51, 144, 236, 0.4);
-            --tg-border: #e2e8f0;
-            --tg-code-bg: #f8f9fa;
+
+        /* مصفوفة التبديل الضوئي اللحظي الموحد والمطابق للرئيسية */
+        html[theme="light"] {
+            --tg-bg-main: #f4f4f5; --tg-bg-sidebar: #ffffff; --tg-bg-chat: #ffffff;
+            --tg-text-main: #000000; --tg-text-sub: #707579; --tg-color-active: #3390ec;
+            --tg-border: #e2e8f0; --tg-neon-glow: 0 0 15px rgba(51, 144, 236, 0.4);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-bg-main);
-            color: var(--tg-text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            transition: background 0.3s, color 0.3s;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--tg-bg-main); color: var(--tg-text-main);
+            margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden;
+            -webkit-tap-highlight-color: transparent; transition: background 0.3s, color 0.3s;
         }
 
-        .tg-layout-wrapper { display: flex; width: 100%; height: 100vh; }
+        .tg-layout-wrapper { display: flex; width: 100%; height: 100vh; position: relative; }
 
-        /* القائمة الجانبية الثابتة الموحدة */
+        /* ☰ القائمة الجانبية الصافية الموحدة - مطابقة بالملي لمنع التداخل البصري */
         .tg-sidebar-chats {
-            width: 320px;
-            background-color: var(--tg-bg-sidebar);
-            border-left: 1px solid var(--tg-border);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            transition: background 0.3s;
+            position: fixed; top: 0; right: 0; height: 100vh; width: 320px; 
+            background-color: var(--tg-bg-sidebar); border-left: 1px solid var(--tg-border);
+            display: flex; flex-direction: column; flex-shrink: 0;
+            transform: translateX(100%) !important;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            z-index: 10000; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        }
+        .tg-sidebar-chats.open { transform: translateX(0) !important; }
+        .tg-sidebar-header { 
+            padding: 15px 20px; display: flex; justify-content: space-between; 
+            align-items: center; border-bottom: 1px solid var(--tg-border); background-color: rgba(0,0,0,0.05);
+        }
+        .sidebar-brand-txt { font-size: 13px; font-weight: bold; color: var(--tg-text-sub); font-family: monospace; letter-spacing: 1px; }
+        
+        /* ✕ زر إغلاق القائمة النصي الفخم والمقيد بأعلى اليمين صراحة */
+        .tg-close-sidebar-text-btn {
+            background-color: rgba(255, 85, 85, 0.08); border: 1px solid rgba(255, 85, 85, 0.3);
+            color: var(--cls-report); border-radius: 6px; padding: 4px 12px; font-size: 12px;
+            font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+            transition: transform 0.1s ease, box-shadow 0.2s; outline: none; font-family: inherit;
+        }
+        .tg-close-sidebar-text-btn:hover { background-color: var(--cls-report); color: #fff; box-shadow: 0 0 10px var(--cls-report); }
+        .tg-close-sidebar-text-btn:active { transform: scale(0.95); }
+
+        .chats-scrollable-area { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 10px; }
+
+        /* ✨ تأثير الأنيميشن والتحميل الخاص بصفوف القائمة الجانبية الملونة */
+        .chat-item-node { 
+            display: flex; align-items: center; padding: 12px 15px; cursor: pointer; 
+            border-bottom: 1px solid var(--tg-border); transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            text-decoration: none; color: inherit; position: relative; overflow: hidden;
+        }
+        .chat-item-node:hover { background-color: rgba(255, 255, 255, 0.04); padding-right: 22px; }
+        
+        /* 🚀 تلوين الأيقونات النيونية المشعة لكل قسم عند التمرير أو اللمس */
+        .node-main:hover .chat-node-icon { color: #fff; background: var(--cls-main); box-shadow: 0 0 15px var(--cls-main); }
+        .node-projects:hover .chat-node-icon { color: #fff; background: var(--cls-projects); box-shadow: 0 0 15px var(--cls-projects); }
+        .node-scripts:hover .chat-node-icon { color: #fff; background: var(--cls-scripts); box-shadow: 0 0 15px var(--cls-scripts); }
+        .node-about:hover .chat-node-icon { color: #fff; background: var(--cls-about); box-shadow: 0 0 15px var(--cls-about); }
+        .node-report:hover .chat-node-icon { color: #fff; background: var(--cls-report); box-shadow: 0 0 15px var(--cls-report); }
+        
+        .chat-node-icon { 
+            width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); 
+            display: flex; align-items: center; justify-content: center; margin-left: 12px; 
+            font-size: 15px; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex-shrink: 0; 
+        }
+        
+        .chat-node-meta { display: flex; flex-direction: column; text-align: right; overflow: hidden; }
+        .chat-node-title { font-size: 13.5px; font-weight: bold; margin: 0; white-space: nowrap; text-overflow: ellipsis; transition: color 0.25s; }
+        .chat-node-preview { font-size: 11px; color: var(--tg-text-sub); margin: 3px 0 0 0; white-space: nowrap; text-overflow: ellipsis; }
+
+        /* 🧱 منسدل الألعاب المطور والمطابق التام للرئيسية دون انحراف */
+        .tg-dropdown-trigger-item { background: none; border: none; width: 100%; font-family: inherit; font-size: inherit; color: inherit; padding: 0; outline: none; }
+        .tg-dropdown-panel-content { 
+            display: none; background-color: rgba(0, 0, 0, 0.25); 
+            border-bottom: 1px solid var(--tg-border); border-right: 4px solid var(--tg-border);
+            flex-direction: column; padding-right: 10px; transition: all 0.3s ease; 
+        }
+        .tg-dropdown-panel-content.active { display: flex; animation: fadeInDropdown 0.25s ease-out; border-right-color: var(--tg-color-active); }
+        @keyframes fadeInDropdown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .game-sub-link { display: flex; align-items: center; padding: 11px 15px; text-decoration: none; color: var(--tg-text-sub); font-size: 12.5px; font-weight: bold; border-bottom: 1px dashed rgba(255, 255, 255, 0.03); transition: all 0.2s ease; }
+        .game-sub-link i { margin-left: 10px; font-size: 13px; }
+        
+        .link-snake:hover { color: var(--cls-snake); text-shadow: 0 0 10px var(--cls-snake); padding-right: 22px; }
+        .link-tetris:hover { color: var(--cls-tetris); text-shadow: 0 0 10px var(--cls-tetris); padding-right: 22px; }
+        .link-xo:hover { color: var(--cls-xo); text-shadow: 0 0 10px var(--cls-xo); padding-right: 22px; }
+        .link-shooter:hover { color: var(--cls-shooter); text-shadow: 0 0 10px var(--cls-shooter); padding-right: 22px; }
+        .link-clicker:hover { color: var(--cls-clicker); text-shadow: 0 0 10px var(--cls-clicker); padding-right: 22px; }
+        .link-card:hover { color: var(--cls-card); text-shadow: 0 0 10px var(--cls-card); padding-right: 22px; }
+        .link-chess:hover { color: #fff; text-shadow: 0 0 10px #fff; padding-right: 22px; }
+        .link-domino:hover { color: var(--cls-domino); text-shadow: 0 0 10px var(--cls-domino); padding-right: 22px; }
+        .link-ladder:hover { color: var(--cls-ladder); text-shadow: 0 0 10px var(--cls-ladder); padding-right: 22px; }
+
+        .sidebar-footer-action-box { margin-top: auto; padding: 15px; border-top: 1px solid var(--tg-border); display: flex; justify-content: center; background-color: rgba(0,0,0,0.1); }
+        .sidebar-theme-switcher-btn { width: 100%; padding: 11px; background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(82, 136, 193, 0.2); color: var(--tg-text-sub); border-radius: 8px; font-size: 12.5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; transition: all 0.2s; outline: none; }
+        .sidebar-theme-switcher-btn:hover { background-color: rgba(82, 136, 193, 0.1); color: #fff; border-color: var(--tg-color-active); box-shadow: var(--tg-neon-glow); }
+        .tg-main-chat-view { flex: 1; background-color: var(--tg-bg-main); display: flex; flex-direction: column; position: relative; width: 100%; }
+        .chat-header-bar { height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 10; box-sizing: border-box; width: 100%; position: relative; }
+        
+        .tg-text-menu-trigger-btn { background-color: rgba(36, 129, 204, 0.08); border: 1px solid rgba(36, 129, 204, 0.3); color: var(--tg-color-active); border-radius: 6px; padding: 6px 14px; font-size: 13px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: transform 0.1s ease, background-color 0.2s, box-shadow 0.2s; outline: none; z-index: 25; font-family: inherit; }
+        .tg-text-menu-trigger-btn:hover { background-color: var(--tg-color-active); color: #fff; box-shadow: var(--tg-neon-glow); }
+        .tg-text-menu-trigger-btn:active { transform: scale(0.95); }
+
+        /* 🎯 تأثير التوهج النيوني الحقيقي الأصلي الموسط لاسم البراوي ليتطابق مع الرئيسية تماماً */
+        .brand-neon-center-btn { font-size: 19px; font-weight: bold; font-family: monospace; color: var(--tg-color-active); text-decoration: none; cursor: pointer; letter-spacing: 1px; text-shadow: var(--tg-neon-glow); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: transform 0.1s ease, text-shadow 0.2s; -webkit-user-select: none; user-select: none; z-index: 25; }
+        .brand-neon-center-btn:active { transform: translate(-50%, -50%) scale(0.92); text-shadow: 0 0 25px var(--tg-color-active); }
+        
+        /* علبة المحتويات وضمان التوسيط العمودي والأفقي المحكم بالكامل 100% ومنع أي ميل جانبي */
+        .chat-messages-container { 
+            flex: 1; overflow-y: auto; padding: 30px 20px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            box-sizing: border-box; width: 100%; max-width: 1200px; margin: 0 auto; position: relative;
         }
 
-        .tg-sidebar-header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--tg-border);
-        }
+        .projects-grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; width: 100%; transition: all 0.3s; }
+        .project-neon-card { background-color: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; animation: cardInitPop 0.4s ease-out both; }
+        @keyframes cardInitPop { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+        
+        /* تمييز كروت إسكربتات بايثون باللون الأخضر النيوني المخصص لها عند التمرير بنقاء */
+        .project-neon-card:hover { transform: translateY(-5px); border-color: var(--cls-scripts); box-shadow: 0 0 15px rgba(78, 239, 93, 0.5); }
+        
+        .proj-card-title { font-size: 15.5px; font-weight: bold; margin: 0 0 12px 0; color: var(--tg-text-main); display: flex; align-items: center; gap: 8px; }
+        .proj-card-desc { font-size: 12.5px; color: var(--tg-text-sub); line-height: 1.6; margin: 0 0 20px 0; text-align: right; }
+        .proj-card-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--tg-border); padding-top: 12px; margin-top: auto; }
+        .proj-tech-tag { background-color: rgba(78, 239, 93, 0.08); color: var(--cls-scripts); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; font-family: monospace; }
+        
+        .proj-visit-btn { background: none; border: 1px solid var(--cls-scripts); color: var(--cls-scripts); border-radius: 6px; padding: 5px 14px; font-size: 12.5px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .proj-visit-btn:hover { background-color: var(--cls-scripts); color: #0e1621; box-shadow: 0 0 12px var(--cls-scripts); }
 
-        .chats-scrollable-area { flex: 1; overflow-y: auto; }
+        /* 🪐 شفرة الـ Loading المتنفسة والموضوعة في السنتر المطلق للمتصفح بالملي حلاً للمشكلة */
+        .tg-radar-loading-spinner-box { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 100; }
+        .radar-pulse-neon-ring { width: 50px; height: 50px; border: 3px solid transparent; border-top-color: var(--tg-color-active); border-radius: 50%; animation: radarPulseSpin 0.9s linear infinite; box-shadow: var(--tg-neon-glow); }
+        @keyframes radarPulseSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        /* عبارة جاري السحب موسطة نيونياً لتقلب تلقائياً مع الاسم */
+        .radar-pulse-text { font-size: 14.5px; font-weight: bold; color: var(--tg-color-active); letter-spacing: 0.5px; text-shadow: var(--tg-neon-glow); animation: textNeonBreathe 1.5s ease-in-out infinite alternate; }
+        @keyframes textNeonBreathe { from { opacity: 0.5; } to { opacity: 1; } }
 
-        .chat-item-node {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid var(--tg-border);
-            transition: 0.2s;
-            text-decoration: none;
-            color: inherit;
-        }
-        .chat-item-node:hover, .chat-item-node.active {
-            background-color: var(--tg-color-active);
-            color: #fff !important;
-            box-shadow: var(--tg-neon-glow);
-        }
-
-        .chat-node-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: rgba(82, 136, 193, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 12px;
-            font-size: 18px;
-            color: var(--tg-color-active);
-            flex-shrink: 0;
-        }
-        .chat-item-node:hover .chat-node-icon, .chat-item-node.active .chat-node-icon {
-            color: #fff; background: rgba(255, 255, 255, 0.2);
-        }
-
-        .chat-node-meta { display: flex; flex-direction: column; overflow: hidden; text-align: right; }
-        .chat-node-title { font-size: 14.5px; font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-node-preview { font-size: 12px; color: var(--tg-text-sub); margin: 4px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-item-node:hover .chat-node-preview, .chat-item-node.active .chat-node-preview { color: rgba(255,255,255,0.8); }
-    </style>
-</head>
-<style>
-    /* الجناح الأيسر: شاشة قنوات إرسال الشيفرات البرمجية للتليجرام */
-    .tg-main-chat-view {
-        flex: 1;
-        background-color: var(--tg-bg-main);
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        transition: background 0.3s;
-    }
-
-    .chat-header-bar {
-        height: 60px;
-        background-color: var(--tg-bg-sidebar);
-        border-bottom: 1px solid var(--tg-border);
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        justify-content: space-between;
-        z-index: 10;
-        transition: background 0.3s;
-    }
-
-    .theme-toggle-btn { background: none; border: none; color: var(--tg-color-active); font-size: 18px; cursor: pointer; }
-
-    .chat-messages-container {
-        flex: 1;
-        overflow-y: auto;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-        align-items: center;
-        background: var(--tg-bg-main);
-    }
-
-    /* 🪐 تصميم كتل شفرات بايثون لتطابق فقاعات رسائل التليجرام البرمجية الحصينة */
-    .tg-script-message-bubble {
-        width: 100%;
-        max-width: 700px;
-        background-color: var(--tg-bg-chat);
-        border: 1px solid var(--tg-border);
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        box-sizing: border-box;
-        text-align: right;
-        display: flex;
-        flex-direction: column;
-        transition: background 0.3s;
-    }
-
-    .script-title-tg {
-        font-size: 15px;
-        font-weight: bold;
-        color: var(--tg-color-active);
-        margin: 0 0 8px 0;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .script-desc-tg {
-        font-size: 13.5px;
-        color: var(--tg-text-main);
-        line-height: 1.5;
-        margin: 0 0 14px 0;
-    }
-
-    /* 📦 مربع محاكاة رسائل الكود البرمجي المشفرة بداخل التليجرام */
-    .tg-code-block-container {
-        background-color: var(--tg-code-bg);
-        border: 1px solid var(--tg-border);
-        border-radius: 8px;
-        padding: 15px;
-        position: relative;
-        text-align: left;
-        direction: ltr;
-        overflow-x: auto;
-        margin-bottom: 12px;
-    }
-
-    .tg-code-block-container pre {
-        margin: 0;
-        font-family: 'Consolas', 'Courier New', monospace;
-        font-size: 13px;
-        color: #a9b7c6;
-        line-height: 1.5;
-    }
-
-    /* أزرار النسخ الزجاجية المدمجة في ثيم التليجرام غرافيت */
-    .copy-script-btn {
-        align-self: flex-start;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 9px 16px;
-        background-color: rgba(82, 136, 193, 0.08);
-        border: 1px solid rgba(82, 136, 193, 0.2);
-        border-radius: 6px;
-        color: var(--tg-color-active);
-        font-size: 12.5px;
-        font-weight: bold;
-        cursor: pointer;
-        font-family: inherit;
-        transition: 0.2s;
-    }
-    .copy-script-btn:hover {
-        background-color: var(--tg-color-active);
-        color: #fff;
-        box-shadow: var(--tg-neon-glow);
-    }
-    .copy-script-btn.copied {
-        background-color: #3fb950;
-        border-color: #3fb950;
-        color: #fff;
-        box-shadow: 0 0 10px rgba(63,185,80,0.4);
-    }
-
-    @media (max-width: 768px) {
-        .tg-sidebar-chats { width: 75px; }
-        .chat-node-meta, .tg-sidebar-header h3 { display: none; }
-        .chat-node-icon { margin-left: 0; }
-        .chat-item-node { justify-content: center; padding: 15px 0; }
-    }
+        .clean-tg-footer-text { margin-top: auto; padding: 15px 0; font-size: 12px; color: var(--tg-text-sub); font-family: inherit; text-align: center; width: 100%; letter-spacing: 0.5px; opacity: 0.8; margin-right: auto; margin-left: auto; }
 </style>
+</head>
+<body>
+    <div class="sidebar-overlay-tap" id="sidebarMobileOverlay" onclick="toggleMainSidebarNavigation(false)"></div>
 
-<body theme="dark">
     <div class="tg-layout-wrapper">
         
-        <!-- القائمة الجانبية المستقرة والموحدة للملاحة التبادلية -->
-        <div class="tg-sidebar-chats">
+        <!-- ☰ القائمة الجانبية الصافية الموحدة - مطابقة بالملي لمنع التداخل وعودة زر الإغلاق للسطح صراحة -->
+        <div class="tg-sidebar-chats" id="globalNavigationSidebar">
             <div class="tg-sidebar-header">
-                <h3 style="margin: 0; font-size: 16px;">تليجرام OS</h3>
-                <i class="fas fa-bars" style="color: var(--tg-text-sub);"></i>
+                <span class="sidebar-brand-txt">SYSTEM_NAVIGATION</span>
+                <!-- ✕ حقن زر الإغلاق النصي المطور في أعلى القائمة صراحة وبشكل بارز جداً لسهولة اللمس حلاً للمشكلة -->
+                <button class="tg-close-sidebar-text-btn" onclick="toggleMainSidebarNavigation(false)">
+                    إغلاق القائمة ✕
+                </button>
             </div>
             
             <div class="chats-scrollable-area">
-                <a href="/" class="chat-item-node">
-                    <div class="chat-node-icon"><i class="fas fa-user-shield"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title">البوابة الرئيسية</h4>
-                        <p class="chat-node-preview">الملف الشخصي للأدمن</p>
-                    </div>
+                <!-- 1. البوابة الرئيسية -->
+                <a href="/" class="chat-item-node node-main">
+                    <div class="chat-node-icon" style="color: var(--cls-main);"><i class="fas fa-user-shield"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">البوابة الرئيسية</h4><p class="chat-node-preview">الملف الشخصي للأدمن</p></div>
                 </a>
-                <div class="section-menu-divider" style="padding: 10px 15px 5px 15px; font-size: 11px; color: var(--tg-text-sub); text-align: right;">القنوات والوحدات 📂</div>
-                <a href="/scripts" class="chat-item-node active">
-                    <div class="chat-node-icon"><i class="fab fa-python"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title">إسكربتات بايثون</h4>
-                        <p class="chat-node-preview">أكواد جاهزة للنسخ الفوري</p>
-                    </div>
+                
+                <!-- 2. معرض المشاريع -->
+                <a href="/projects" class="chat-item-node node-projects">
+                    <div class="chat-node-icon" style="color: var(--cls-projects);"><i class="fas fa-folder"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">معرض المشاريع</h4><p class="chat-node-preview">تطبيقات برامج ميديا حية</p></div>
                 </a>
-                <a href="/report" class="chat-item-node">
-                    <div class="chat-node-icon" style="color: var(--tg-color-active);"><i class="fas fa-tools"></i></div>
-                    <div class="chat-node-meta">
-                        <h4 class="chat-node-title">بلاغات الصيانة</h4>
-                        <p class="chat-node-preview">إرسال تنبيه حي للبوت</p>
-                    </div>
+
+                <!-- 3. إسكربتات بايثون (مفعل هنا صراحة نيونياً بلون القسم الأزرق الحركي للرئيسية منعا للشلل) -->
+                <a href="/scripts" class="chat-item-node node-scripts active">
+                    <div class="chat-node-icon" style="color: var(--cls-main);"><i class="fab fa-python"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">إسكربتات بايثون</h4><p class="chat-node-preview">سحب تلقائي من الـ GitHub حياً</p></div>
                 </a>
+
+                <!-- 4. قائمة ألعاب النظام المنسدلة المحدثة الفخمة -->
+                <div class="tg-dropdown-trigger-item">
+                    <div class="chat-item-node" id="gamesDropdownTriggerNode" onclick="toggleGamesDropdownPanelElement(event)" style="border-bottom: 1px solid var(--tg-border);">
+                        <div class="chat-node-icon" style="color:#d29922; background: rgba(210, 153, 34, 0.1);"><i class="fas fa-gamepad"></i></div>
+                        <div class="chat-node-meta" style="flex:1;"><h4 class="chat-node-title" style="color:#d29922;">قائمة ألعاب النظام 🎮</h4><p class="chat-node-preview">استعراض وفرد الـ 9 ألعاب</p></div>
+                        <i class="fas fa-chevron-down" id="dropdownArrowIconNode" style="font-size:12px; color:var(--tg-text-sub); transition:transform 0.3s; margin-left: 5px;"></i>
+                    </div>
+                    <div class="tg-dropdown-panel-content" id="gamesDropdownContainerPanel">
+                        <a href="/snake" class="game-sub-link link-snake"><i class="fas fa-ghost"></i> لعبة الثعبان 🐍</a>
+                        <a href="/tetris" class="game-sub-link link-tetris"><i class="fas fa-cubes"></i> لعبة التترس 🧱</a>
+                        <a href="/xo" class="game-sub-link link-xo"><i class="fas fa-times-circle"></i> لعبة X-O ❌</a>
+                        <a href="/shooter" class="game-sub-link link-shooter"><i class="fas fa-rocket"></i> قاصف الفضاء 🚀</a>
+                        <a href="/clicker" class="game-sub-link link-clicker"><i class="fas fa-bolt"></i> تحدي النقر السريع ⚡</a>
+                        <a href="/card_game" class="game-sub-link link-card"><i class="fas fa-clone"></i> مطابقة البطاقات 🃏</a>
+                        <a href="/chess" class="game-sub-link link-chess"><i class="fas fa-chess"></i> لعبة الشطرنج ♟️</a>
+                        <a href="/domino" class="game-sub-link link-domino"><i class="fas fa-th-large"></i> لعبة الدومينو 🂾</a>
+                        <a href="/ladder" class="game-sub-link link-ladder"><i class="fas fa-dice"></i> سلم وثعبان 🎲</a>
+                    </div>
+                </div>
+
+                <!-- 5. About Us -->
+                <a href="/about" class="chat-item-node node-about">
+                    <div class="chat-node-icon" style="color: var(--cls-about);"><i class="fas fa-address-card"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">About Us 👤</h4><p class="chat-node-preview">سيرة ذاتية بنافذة اتصال فخمة</p></div>
+                </a>
+
+                <!-- 6. الإبلاغ عن مشكلة -->
+                <a href="/report" class="chat-item-node node-report" style="border-bottom:none;">
+                    <div class="chat-node-icon" style="color: var(--cls-report);"><i class="fas fa-tools"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">الإبلاغ عن مشكلة 🛠️</h4><p class="chat-node-preview">بث فوري لبوت تليجرام لهاتفك</p></div>
+                </a>
+
+                <div class="sidebar-footer-action-box">
+                    <button class="sidebar-theme-switcher-btn" onclick="toggleTelegramThemeGlobal()"><i class="fas fa-adjust"></i> <span id="themeSwitchBtnTextNode">الوضع الداكن 🌙</span></button>
+                </div>
             </div>
         </div>
-        <!-- الجناح الأيسر: مساحة عرض شات مستودع الأكواد الحية -->
+
+        <!-- الجناح الأيسر: مساحة العرض المركزية وإبادة الكاش وسحب الإسكربتات موسطة حداً بالبكسل -->
         <div class="tg-main-chat-view">
             <div class="chat-header-bar">
-                <div style="text-align: right;">
-                    <h3 style="margin: 0; font-size: 15px;">مستودع إسكربتات وأدوات البايثون الحصينة</h3>
-                    <span style="font-size: 11.5px; color: var(--tg-text-sub);">@Albrawe_Scripts | انقر لنسخ شفرة أي كود</span>
+                <div class="header-section-right">
+                    <button class="tg-text-menu-trigger-btn" onclick="toggleMainSidebarNavigation(true)">قائمة ☰</button>
                 </div>
-                <button class="theme-toggle-btn" onclick="toggleTelegramTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+                <div class="brand-neon-center-btn" onclick="location.href='/'">> ALBRAWE_</div>
+                <div style="width:75px;"></div>
             </div>
             
-            <div class="chat-messages-container">
-                
-                <!-- 📡 فقاعة الإسكريبت الأول: محرك جلب وفحص عناوين الأجهزة الجغرافية -->
-                <div class="tg-script-message-bubble">
-                    <h4 class="script-title-tg"><i class="fab fa-python"></i> 1. اسكريبت تتبع وفحص إحداثيات البصمة الرقمية (Geo IP)</h4>
-                    <p class="script-desc-tg">أداة بايثون متقدمة تقوم بالاتصال المباشر بقنوات التتبع السحابية لجلب وفحص معلومات الأجهزة جغرافياً واستخراج كود القارة والدولة بشكل منظم.</p>
-                    
-                    <div class="tg-code-block-container">
-                        <pre id="codeBlock1">import requests
-
-def fetch_device_location_analytics():
-    try:
-        response = requests.get('https://ipapi.co').json()
-        print(f"📡 [SUCCESS] City: {response.get('city')}")
-        print(f"🌍 [SUCCESS] Country: {response.get('country_name')}")
-    except Exception as e:
-        print(f"❌ [ERROR] Radar Connect Failed: {e}")
-
-if __name__ == '__main__':
-    fetch_device_location_analytics()</pre>
-                    </div>
-                    <button class="copy-script-btn" onclick="copyCodeToClipboard('codeBlock1', this)"><i class="fas fa-copy"></i> نسخ الشفرة البرمجية</button>
+            <div class="chat-messages-container" id="scriptsViewMainWrapper">
+                <!-- 📡 صندوق الـ Loading المتنفس والموضوع في السنتر المطلق للمتصفح بالملي حلاً للمشكلة -->
+                <div class="tg-radar-loading-spinner-box" id="githubRadarLoadingBox">
+                    <div class="radar-pulse-neon-ring"></div>
+                    <div class="radar-pulse-text">جاري سحب إسكربتات بايثون تلقائياً من المجلد الحصين... ⚡</div>
                 </div>
 
-                <!-- 📡 فقاعة الإسكريبت الثاني: اسكريبت تشفير مصفوفات البيانات -->
-                <div class="tg-script-message-bubble">
-                    <h4 class="script-title-tg"><i class="fab fa-python"></i> 2. اسكريبت التشفير الثنائي التكتيكي لهياكل النصوص</h4>
-                    <p class="script-desc-tg">أداة مصممة لمعالجة وتعميد تشفير وسحب النصوص والملفات الفوقية بداخل الذاكرة المحلية وحمايتها من هجمات الحقن المفتوحة العشوائية.</p>
-                    
-                    <div class="tg-code-block-container">
-                        <pre id="codeBlock2">import base64
-
-def encrypt_tactical_payload(raw_text):
-    encoded_bytes = base64.b64encode(raw_text.encode('utf-8'))
-    print(f"🔐 [SECURE_GEN]: {encoded_bytes.decode('utf-8')}")
-    return encoded_bytes
-
-if __name__ == '__main__':
-    encrypt_tactical_payload("Albrawe_Secure_Engine_2026")</pre>
-                    </div>
-                    <button class="copy-script-btn" onclick="copyCodeToClipboard('codeBlock2', this)"><i class="fas fa-copy"></i> نسخ الشفرة البرمجية</button>
-                </div>
-
+                <!-- الحاوية الذاتية المقاومة للاختلال لكروت بايثون -->
+                <div class="projects-grid-layout" id="githubScriptsGridContainer"></div>
+                <!-- 🛡️ علامة الحقوق النصية الرمادية الصافية المستقرة في قاع صفحة التصفح بالمنتصف تماماً دون انحراف -->
+                <div class="clean-tg-footer-text">جميع الحقوق محفوظة سيبرانياً وتعود للمسؤول البراوي لعام 2026 ©</div>
             </div>
         </div>
 
     </div>
 
     <script>
-        function toggleTelegramTheme() {
+        // 🌓 محرك التبديل المطور لتغيير نص الزر لحظياً (الوضع الداكن / الوضع المضيء) للزائر حياً دون أي وميض
+        function toggleTelegramThemeGlobal() {
             const htmlNode = document.documentElement;
             const currentTheme = htmlNode.getAttribute("theme");
-            const icon = document.getElementById("themeIcon");
-            if (currentTheme === "dark") {
-                htmlNode.setAttribute("theme", "light");
-                icon.className = "fas fa-sun";
-                localStorage.setItem("tg_preferred_theme", "light");
-            } else {
-                htmlNode.setAttribute("theme", "dark");
-                icon.className = "fas fa-moon";
-                localStorage.setItem("tg_preferred_theme", "dark");
+            const nextTheme = currentTheme === "dark" ? "light" : "dark";
+            
+            htmlNode.setAttribute("theme", nextTheme);
+            localStorage.setItem("tg_preferred_theme", nextTheme);
+            updateThemeButtonTextElement(nextTheme);
+        }
+
+        function updateThemeButtonTextElement(theme) {
+            const btnText = document.getElementById("themeSwitchBtnTextNode");
+            if(btnText) {
+                btnText.innerText = theme === "dark" ? "الوضع الداكن 🌙" : "الوضع المضيء ☀️";
             }
         }
 
-        // 📋 خوارزمية النسخ الفورية المتجاوبة الفعالة لحقن الحافظة كلياً بنقرة زر واحدة
-        function copyCodeToClipboard(blockId, buttonElement) {
-            const textToCopy = document.getElementById(blockId).innerText;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                buttonElement.innerHTML = "<i class='fas fa-check'></i> تم النسخ للحافظة!";
-                buttonElement.classList.add("copied");
+        // ✅ خوارزمية السيطرة والتحكم التبادلي المطلق (فتح وقفل نقي 100% دون أي تعليق أو تداخل) لزر القائمة المحدث
+        function toggleMainSidebarNavigation(openState) {
+            const sidebar = document.getElementById("globalNavigationSidebar");
+            const overlay = document.getElementById("sidebarMobileOverlay");
+            
+            if (openState === true) {
+                sidebar.classList.add("open");
+                overlay.classList.add("active");
+            } else {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("active");
+            }
+        }
+
+        // 🧱 دالة التحكم في فتح وغلق مصفوفة القائمة المنسدلة للألعاب وتدوير السهم بالملي بنقاء لمسي
+        function toggleGamesDropdownPanelElement(event) {
+            event.stopPropagation();
+            const panel = document.getElementById("gamesDropdownContainerPanel");
+            const arrow = document.getElementById("dropdownArrowIconNode");
+            
+            if (panel.classList.contains("active")) {
+                panel.classList.remove("active");
+                arrow.style.transform = "rotate(0deg)";
+            } else {
+                panel.classList.add("active");
+                arrow.style.transform = "rotate(180deg)";
+            }
+        }
+
+        // 📡 مأمورية السحب اللحظي والذكي لملفات البايثون النصية وبث الكروت تلقائياً حياً في السنتر المطهر
+        async function fetchAlbraweGithubScriptsDynamically() {
+            const gridContainer = document.getElementById("githubScriptsGridContainer");
+            const loadingBox = document.getElementById("githubRadarLoadingBox");
+            
+            const username = "Albrawe-2026"; 
+            const repoName = "Telegram-OS"; 
+            const folderPath = "scripts_data"; 
+
+            try {
+                const response = await fetch(`https://github.com{username}/${repoName}/contents/${folderPath}`);
+                if (!response.ok) throw new Error("فشل الوصول إلى المجلد");
                 
-                setTimeout(() => {
-                    buttonElement.innerHTML = "<i class='fas fa-copy'></i> نسخ الشفرة البرمجية";
-                    buttonElement.classList.remove("copied");
-                }, 2000);
-            }).catch(() => {
-                alert("❌ فشل النسخ التلقائي، قُم بالتحديد اليدوي.");
-            });
+                const files = await response.json();
+                const txtFiles = files.filter(file => file.name.endsWith('.txt'));
+                gridContainer.innerHTML = ""; 
+
+                for (const file of txtFiles) {
+                    const fileResponse = await fetch(file.download_url);
+                    const fileText = await fileResponse.text();
+                    
+                    const lines = fileText.split('\n');
+                    const scriptTitle = lines ? lines[0].replace('العنوان:', '').trim() : file.name.replace('.txt', '');
+                    const scriptDesc = lines.slice(1).join('\n').replace('التفاصيل:', '').trim();
+
+                    const cardHTML = `
+                        <div class="project-neon-card">
+                            <h3 class="proj-card-title"><i class="fab fa-python" style="color: #4eef5d;"></i> ${scriptTitle}</h3>
+                            <p class="proj-card-desc">${scriptDesc}</p>
+                            <div class="proj-card-footer">
+                                <span class="proj-tech-tag">بايثون تلقائي</span>
+                                <a href="https://github.com{username}/${repoName}/archive/refs/heads/main.zip" class="proj-visit-btn">
+                                    تحميل الكود <i class="fas fa-download" style="margin-right:4px; font-size:11px;"></i>
+                                📥</a>
+                            </div>
+                        </div>
+                    `;
+                    gridContainer.innerHTML += cardHTML;
+                }
+                if(loadingBox) loadingBox.style.display = "none";
+            } catch (error) {
+                console.error(error);
+                if(loadingBox) loadingBox.style.display = "none";
+                gridContainer.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--cls-report); font-weight: bold; padding: 40px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:24px; margin-bottom:10px;"></i><br>
+                        خطأ في الرادار. يرجى التأكد من إنشاء مجلد بالاسم '${folderPath}' وبداخله ملفات الـ .txt الحاضنة للأكواد!
+                    </div>
+                `;
+            }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
             const savedTheme = localStorage.getItem("tg_preferred_theme") || "dark";
             document.documentElement.setAttribute("theme", savedTheme);
-            document.getElementById("themeIcon").className = savedTheme === "dark" ? "fas fa-moon" : "fas fa-sun";
-
-            // 📡 محرك البث اللحظي لصفحة الإسكريبتات لتغذية الرادار ببيانات الزائر على Netlify
-            let assignedName = localStorage.getItem('cyber_assigned_username') || "Guest_User";
-            fetch(window.location.origin + '/.netlify/functions/log_visit', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ username: assignedName, location: "إسكربتات بايثون 💻" })
-            }).catch(() => {});
+            updateThemeButtonTextElement(savedTheme);
+            fetchAlbraweGithubScriptsDynamically();
         });
     </script>
 </body>
