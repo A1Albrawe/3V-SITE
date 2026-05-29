@@ -1,0 +1,69 @@
+# 🪐 معمارية البناء والتشغيل التكتيكي الموحد لـ Netlify لعام 2026 حياً
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# 📡 إجبار السيرفر السحابي على تحويل وتوجيه كافة مسارات ألعاب النظام والوحدات الفرعية
+# لتعمل كصفحات HTML مستقلة وصافية تماماً بدون الحاجة لكتابة الامتداد .html في المتصفح!
+
+[[redirects]]
+  from = "/snake"
+  to = "/snake.html"
+  status = 200
+
+[[redirects]]
+  from = "/tetris"
+  to = "/tetris.html"
+  status = 200
+
+[[redirects]]
+  from = "/xo"
+  to = "/xo.html"
+  status = 200
+
+[[redirects]]
+  from = "/shooter"
+  to = "/shooter.html"
+  status = 200
+
+[[redirects]]
+  from = "/clicker"
+  to = "/clicker.html"
+  status = 200
+
+[[redirects]]
+  from = "/card_game"
+  to = "/card_game.html"
+  status = 200
+
+[[redirects]]
+  from = "/projects"
+  to = "/projects.html"
+  status = 200
+
+[[redirects]]
+  from = "/about"
+  to = "/about.html"
+  status = 200
+
+[[redirects]]
+  from = "/scripts"
+  to = "/scripts.html"
+  status = 200
+
+[[redirects]]
+  from = "/report"
+  to = "/report.html"
+  status = 200
+
+# 🔐 تأمين مسار الأدمن السري المباشر وإبادة أخطاء الـ Not Found (404) للأبد حياً
+[[redirects]]
+  from = "/albrawe-admin-panel-2026"
+  to = "/admin.html"
+  status = 200
+
+# صمام الأمان الشامل لتمرير طلبات الـ API عبر المعابر اللادولية لـ Edge Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
