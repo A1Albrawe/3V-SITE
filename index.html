@@ -51,37 +51,40 @@
         /* الجناح الأيسر الصافي للمحتوى */
         .tg-main-chat-view { flex: 1; background-color: var(--tg-bg-main); display: flex; flex-direction: column; position: relative; transition: background 0.3s; width: 100%; }
         
-        /* 🪐 شريط الهيدر الحصين المطور بالتموضع المطلق لمنع الانضغاط والاختفاء نهائياً */
+        /* 🪐 شريط الهيدر المطور بالـ Flexbox الموزع لمنع الانضغاط والاختفاء نهائياً على الكمبيوتر والموبايل */
         .chat-header-bar {
             height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border);
-            display: flex; align-items: center; justify-content: center; position: relative;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
             z-index: 10; transition: background 0.3s; box-sizing: border-box; width: 100%;
         }
         
-        /* 🍔 زر الهامبرغر في أقصى اليمين المطلق صراحة وبقفل بكسل ثابت */
-        .menu-hamburger-btn {
-            position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: var(--tg-color-active); font-size: 24px;
-            cursor: pointer; padding: 5px; outline: none; z-index: 20; display: block; transition: color 0.2s;
-        }
-        .menu-hamburger-btn:hover { text-shadow: var(--tg-neon-glow); }
+        /* الأجنحة الثلاثية المقفلة بالبكسل لضمان الرؤية الحتمية للأزرار والاسم */
+        .header-section-right { display: flex; align-items: center; gap: 12px; min-width: 120px; justify-content: flex-start; }
+        .header-section-center { display: flex; align-items: center; justify-content: center; flex: 1; }
+        .header-section-left { display: flex; align-items: center; min-width: 120px; justify-content: flex-end; }
         
-        /* 🎯 شعار البراوي مستقر في السنتر الهندسي الصافي لمنتصف الشاشة تماماً مع ارتداد انضغاطي */
+        /* 🍔 زر الهامبرغر النيوني المطور والمضمون الرؤية 100% */
+        .menu-hamburger-btn {
+            background: none; border: none; color: var(--tg-color-active); font-size: 24px;
+            cursor: pointer; padding: 6px; outline: none; z-index: 25; display: block; transition: transform 0.2s;
+        }
+        .menu-hamburger-btn:hover { transform: scale(1.1); text-shadow: var(--tg-neon-glow); }
+        
+        /* 🎯 شعار البراوي النيوني الفخم الموسط برقم سحري مذهل */
         .brand-neon-center-btn {
             font-size: 19px; font-weight: bold; font-family: monospace; color: var(--tg-color-active);
             text-decoration: none; cursor: pointer; letter-spacing: 1px;
             text-shadow: var(--tg-neon-glow);
             transition: transform 0.1s ease, text-shadow 0.2s;
             -webkit-user-select: none; user-select: none;
-            z-index: 15; display: inline-block;
+            display: inline-block; z-index: 25;
         }
         .brand-neon-center-btn:active { transform: scale(0.92); text-shadow: 0 0 25px var(--tg-color-active); }
         
-        /* 🌓 زر الداكن والفاتح في أقصى اليسار المطلق صراحة وبقفل بكسل ثابت حماية من الحجب */
+        /* 🌓 زر الداكن والفاتح المضمن بالأيقونة المضاءة المتجاوبة حياً */
         .theme-toggle-btn {
-            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
             background: none; border: none; color: var(--tg-color-active); font-size: 20px;
-            cursor: pointer; padding: 5px; outline: none; z-index: 20; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
+            cursor: pointer; padding: 6px; outline: none; z-index: 25; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
         }
         .theme-toggle-btn:hover { transform: scale(1.1); text-shadow: var(--tg-neon-glow); }
         
@@ -173,18 +176,24 @@
         </div>
         <!-- الجناح الأيسر: مساحة شات العرض والمحتوى المركزي للبروفايل -->
         <div class="tg-main-chat-view">
-            <!-- 🪐 الهيدر المطلق المحصن: الأزرار والاسم معزولة بمواقع ثابتة ومستحيلة الاختفاء أو الانضغاط -->
+            <!-- 🪐 هيكل التوزيع الثلاثي الحصين بالفليكس بوكس الصافي لمنع حجب الأزرار نهائياً -->
             <div class="chat-header-bar">
-                <!-- 🍔 زر الهامبرغر في أقصى اليمين المطلق صراحة -->
-                <button class="menu-hamburger-btn" onclick="toggleMainSidebarNavigation(true)"><i class="fas fa-bars"></i></button>
+                <!-- الغرفة اليمنى: زر الهامبرغر مقفل باليمين صراحة -->
+                <div class="header-section-right">
+                    <button class="menu-hamburger-btn" onclick="toggleMainSidebarNavigation(true)"><i class="fas fa-bars"></i></button>
+                </div>
                 
-                <!-- 🎯 اسم المسؤول موسط في السنتر المطلق للشاشة تماماً -->
-                <div class="brand-neon-center-btn" onclick="location.href='/'">> ALBRAWE_</div>
+                <!-- الغرفة الوسطى: شعار البراوي النيوني موسط بالملي وبقفل بكسل -->
+                <div class="header-section-center">
+                    <div class="brand-neon-center-btn" onclick="location.href='/'">> ALBRAWE_</div>
+                </div>
                 
-                <!-- 🌓 زر الداكن والفاتح الحركي في أقصى اليسار المطلق صراحة بالكامل -->
-                <button class="theme-toggle-btn" onclick="toggleTelegramThemeGlobal()">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
+                <!-- 🌓 الغرفة اليسرى: زر الداكن والفاتح مقفل باليسار صراحة وموثق بالأيقونة التفاعلية -->
+                <div class="header-section-left">
+                    <button class="theme-toggle-btn" onclick="toggleTelegramThemeGlobal()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                </div>
             </div>
             
             <div class="chat-messages-container">
@@ -218,7 +227,7 @@
     </div>
 
     <script>
-        // 🌓 محرك التبديل الشامل لزر الداكن والفاتح لحظياً
+        // 🌓 محرك التبديل الشامل لزر الداكن والفاتح لحظياً للزائر
         function toggleTelegramThemeGlobal() {
             const htmlNode = document.documentElement;
             const currentTheme = htmlNode.getAttribute("theme");
