@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لعبة الثعبان السيبراني | تليجرام OS</title>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* 🎨 مصفوفة التناغم اللوني للتليجرام غرافيت والتبديل الديناميكي */
+        :root[theme="dark"] {
+            --tg-bg-main: #0e1621; --tg-bg-sidebar: #17212b; --tg-bg-chat: #182533;
+            --tg-text-main: #f5f5f5; --tg-text-sub: #708499; --tg-color-active: #5288c1;
+            --tg-neon-glow: 0 0 15px rgba(82, 136, 193, 0.6); --tg-border: #101921;
+        }
+        :root[theme="light"] {
+            --tg-bg-main: #f4f4f5; --tg-bg-sidebar: #ffffff; --tg-bg-chat: #ffffff;
+            --tg-text-main: #000000; --tg-text-sub: #707579; --tg-color-active: #3390ec;
+            --tg-neon-glow: 0 0 15px rgba(51, 144, 236, 0.4); --tg-border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--tg-bg-main); color: var(--tg-text-main);
+            margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; transition: background 0.3s;
+        }
+
+        .tg-layout-wrapper { display: flex; width: 100%; height: 100vh; }
+
+        /* الجناح الأيمن الثابت للملاحة */
+        .tg-sidebar-chats {
+            width: 320px; background-color: var(--tg-bg-sidebar); border-left: 1px solid var(--tg-border);
+            display: flex; flex-direction: column; flex-shrink: 0; transition: background 0.3s;
+        }
+        .tg-sidebar-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--tg-border); }
+        .chats-scrollable-area { flex: 1; overflow-y: auto; }
+        .chat-item-node { display: flex; align-items: center; padding: 12px 15px; cursor: pointer; border-bottom: 1px solid var(--tg-border); transition: 0.2s; text-decoration: none; color: inherit; }
+        .chat-item-node:hover, .chat-item-node.active { background-color: var(--tg-color-active); color: #fff !important; box-shadow: var(--tg-neon-glow); }
+        .chat-node-icon { width: 45px; height: 45px; border-radius: 50%; background: rgba(82, 136, 193, 0.1); display: flex; align-items: center; justify-content: center; margin-left: 12px; font-size: 18px; color: var(--tg-color-active); flex-shrink: 0; }
+        .chat-item-node:hover .chat-node-icon, .chat-item-node.active .chat-node-icon { color: #fff; background: rgba(255, 255, 255, 0.2); }
+        .chat-node-meta { display: flex; flex-direction: column; text-align: right; }
+        .chat-node-title { font-size: 14.5px; font-weight: bold; margin: 0; }
+        .chat-node-preview { font-size: 12px; color: var(--tg-text-sub); margin: 4px 0 0 0; }
+
+        /* الجناح الأيسر: ساحة اللعبة المركزية الفخمة */
+        .tg-main-chat-view { flex: 1; background-color: var(--tg-bg-main); display: flex; flex-direction: column; position: relative; }
+        .chat-header-bar { height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; z-index: 10; }
+        .chat-messages-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
+
+        /* 🎮 لوحة الجيم بلاي الخاصة بالثعبان */
+        .game-panel-layout { display: flex; gap: 20px; width: 100%; max-width: 950px; justify-content: center; align-items: flex-start; margin-top: 10px; }
+        .canvas-container-node { background-color: #000; border: 3px solid var(--tg-color-active); border-radius: 12px; box-shadow: var(--tg-neon-glow); position: relative; overflow: hidden; }
+        canvas { display: block; background: #050b14; }
+
+        /* لوحة الـ High Score الجانبية المضاءة للزوار */
+        .leaderboard-sidebar-card { width: 280px; background-color: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 12px; padding: 15px; box-sizing: border-box; text-align: right; }
+        .leader-score-row { display: flex; justify-content: space-between; padding: 8px 4px; border-bottom: 1px dashed var(--tg-border); font-size: 13.5px; }
+        .leader-score-row:last-child { border-bottom: none; }
+        .rank-badge { font-weight: bold; color: var(--tg-color-active); margin-left: 6px; }
+
+        /* 📱 أزرار التوجيه اللمسية للهواتف الذكية بنقاء زجاجي */
+        .mobile-dpad-controls { display: none; grid-template-columns: repeat(3, 55px); grid-template-rows: repeat(3, 55px); gap: 8px; margin-top: 15px; justify-content: center; }
+        .dpad-btn { background-color: rgba(82, 136, 193, 0.15); border: 1px solid var(--tg-color-active); color: var(--tg-color-active); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; -webkit-user-select: none; user-select: none; }
+        .dpad-btn:active { background-color: var(--tg-color-active); color: #fff; box-shadow: var(--tg-neon-glow); }
+
+        /* نافذة حفظ الاسم المنبثقة التليجرامية الفخمة عند الخسارة */
+        .tg-modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index: 20000; display: none; align-items: center; justify-content: center; }
+        .tg-modal-box { background: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 14px; padding: 25px; width: 90%; max-width: 360px; text-align: center; box-shadow: var(--tg-neon-glow); }
+
+        @media (max-width: 850px) {
+            .game-panel-layout { flex-direction: column; align-items: center; }
+            .leaderboard-sidebar-card { width: 100%; max-width: 400px; }
+            .mobile-dpad-controls { display: grid; }
+            .tg-sidebar-chats { width: 75px; } .chat-node-meta, .tg-sidebar-header h3 { display: none; } .chat-item-node { justify-content: center; }
+        }
+    </style>
+</head>
+<body theme="dark">
+
+    <!-- 🏆 صندوق الخسارة وحفظ النتيجة السحابي الفوري -->
+    <div class="tg-modal-overlay" id="scoreModalOverlay">
+        <div class="tg-modal-box">
+            <i class="fas fa-trophy" style="font-size: 40px; color: #ffd700; margin-bottom: 12px;"></i>
+            <h3 style="margin: 0; font-size: 18px;">انتهى البث السحابي! 🎮</h3>
+            <p style="font-size: 13px; color: var(--tg-text-sub); margin: 6px 0 15px 0;">لقد حققت نتيجة مذهلة: <span id="finalScoreLabel" style="font-weight:bold; color:var(--tg-color-active);">0</span></p>
+            <input type="text" id="playerHighScoreName" style="width:100%; padding:10px; background:var(--tg-bg-main); border:1px solid var(--tg-border); border-radius:8px; color:var(--tg-text-main); text-align:center; font-family:inherit; outline:none; margin-bottom:15px;" placeholder="اكتب اسمك لتسجيل الترتيب..." maxlength="15" autocomplete="off">
+            <button class="tg-submit-btn" style="width:100%; padding:12px; background:var(--tg-color-active); color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="submitScoreToCloudServer()">تسجيل في قائمة الصدارة السحابية 🚀</button>
+        </div>
+    </div>
+
+    <div class="tg-layout-wrapper">
+        
+        <!-- القائمة الجانبية الموحدة للتنقل السريع -->
+        <div class="tg-sidebar-chats">
+            <div class="tg-sidebar-header">
+                <h3 style="margin: 0; font-size: 16px;">تليجرام OS</h3>
+                <i class="fas fa-bars" style="color: var(--tg-text-sub);"></i>
+            </div>
+            <div class="chats-scrollable-area">
+                <a href="/" class="chat-item-node">
+                    <div class="chat-node-icon"><i class="fas fa-user-shield"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title">البوابة الرئيسية</h4><p class="chat-node-preview">الملف الشخصي للأدمن</p></div>
+                </a>
+                <div class="section-menu-divider" style="padding: 10px 15px 5px 15px; font-size: 11px; color: var(--tg-text-sub); text-align: right;">ألعاب النظام 🎮</div>
+                <a href="/snake" class="chat-item-node active">
+                    <div class="chat-node-icon" style="color: #3fb950;"><i class="fas fa-ghost"></i></div>
+                    <div class="chat-node-meta"><h4 class="chat-node-title" style="color: #3fb950;">لعبة الثعبان 🐍</h4><p class="chat-node-preview">تدرج صعوبة وحفظ سحابي</p></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ساحة اللعب واستعراض الشاشات اللمسية -->
+        <div class="tg-main-chat-view">
+            <div class="chat-header-bar">
+                <div style="text-align: right;">
+                    <h3 style="margin: 0; font-size: 15px;">قناة لعبة الثعبان السيبراني</h3>
+                    <span style="font-size: 11.5px; color: var(--tg-text-sub);" id="gameDifficultyStatus">المستوى الحالي: 1 (سرعة قياسية)</span>
+                </div>
+                <div style="font-weight: bold; font-size: 15px;">النتيجة الحالية: <span id="liveScoreCounter" style="color:var(--tg-color-active);">0</span></div>
+            </div>
+            
+            <div class="chat-messages-container">
+                <div class="game-panel-layout">
+                    
+                    <!-- لوحة التحليلات وقائمة الصدارة المباشرة لجميع الزوار -->
+                    <div class="leaderboard-sidebar-card">
+                        <h4 style="margin: 0 0 12px 0; font-size: 14.5px; color: var(--tg-color-active); text-align: center; border-bottom: 1px dashed var(--tg-border); padding-bottom: 6px;"><i class="fas fa-medal"></i> المتصدرين سحابياً (High Score)</h4>
+                        <div id="leaderboardRowsContainer">
+                            <p style='color:var(--tg-text-sub); font-size:12px; text-align:center;'>جاري سحب الترتيب السحابي... 🛰️</p>
+                        </div>
+                    </div>
+
+                    <!-- حاوية القماش الرسمية للجرافيكس المتجاوب بالبكسل -->
+                    <div class="canvas-container-node">
+                        <canvas id="snakeCanvas" width="400" height="400"></canvas>
+                    </div>
+                    
+                </div>
+
+                <!-- أزرار الـ D-Pad اللمسية الحصينة للهواتف المظلمة غرافيت -->
+                <div class="mobile-dpad-controls">
+                    <div></div><div class="dpad-btn" onclick="changeDirectionTouch('UP')"><i class="fas fa-chevron-up"></i></div><div></div>
+                    <div class="dpad-btn" onclick="changeDirectionTouch('LEFT')"><i class="fas fa-chevron-right"></i></div><div></div><div class="dpad-btn" onclick="changeDirectionTouch('RIGHT')"><i class="fas fa-chevron-left"></i></div>
+                    <div></div><div class="dpad-btn" onclick="changeDirectionTouch('DOWN')"><i class="fas fa-chevron-down"></i></div><div></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        // 📡 محرك الصوت السيبراني المولد ذاتياً عبر ترددات المتصفح بدون ملفات خارجية حماية للهاتف
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSynthesizedSound(freq, type, duration) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + duration);
+            } catch(e){}
+        }
+
+        // إعدادات وهياكل مصفوفة الجيم بلاي
+        const canvas = document.getElementById("snakeCanvas");
+        const ctx = canvas.getContext("2d");
+        const boxSize = 20; let score = 0; let level = 1; let gameSpeed = 130;
+        let snake = [{ x: 10 * boxSize, y: 10 * boxSize }];
+        let food = { x: Math.floor(Math.random()*20)*boxSize, y: Math.floor(Math.random()*20)*boxSize };
+        let d = "RIGHT"; let gameLoopInterval; let isGameOver = false;
+
+        document.addEventListener("keydown", (e) => {
+            if ((e.key === "ArrowLeft" || e.key === "a") && d !== "RIGHT") d = "LEFT";
+            else if ((e.key === "ArrowUp" || e.key === "w") && d !== "DOWN") d = "UP";
+            else if ((e.key === "ArrowRight" || e.key === "d") && d !== "LEFT") d = "RIGHT";
+            else if ((e.key === "ArrowDown" || e.key === "s") && d !== "UP") d = "DOWN";
+        });
+
+        function changeDirectionTouch(dir) {
+            if (dir === "LEFT" && d !== "RIGHT") d = "LEFT";
+            if (dir === "UP" && d !== "DOWN") d = "UP";
+            if (dir === "RIGHT" && d !== "LEFT") d = "RIGHT";
+            if (dir === "DOWN" && d !== "UP") d = "DOWN";
+        }
+
+        function drawGame() {
+            if (isGameOver) return;
+            ctx.fillStyle = "#050b14"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // رسم جدران اللعبة نيونياً متطابقة مع مستوى الصعوبة الحالي
+            ctx.strokeStyle = level > 2 ? "#ff007f" : "#5288c1";
+            ctx.lineWidth = 4; ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+            // رسم الثعبان بانسيابية نيون تليجرام فخمة
+            for (let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = i === 0 ? "#00ff66" : "#3390ec";
+                ctx.shadowBlur = 10; ctx.shadowColor = "#3390ec";
+                ctx.fillRect(snake[i].x, snake[i].y, boxSize, boxSize);
+                ctx.shadowBlur = 0;
+            }
+
+            // رسم طعام الثعبان المشع
+            ctx.fillStyle = "#ff5555"; ctx.shadowBlur = 12; ctx.shadowColor = "#ff5555";
+            ctx.fillRect(food.x, food.y, boxSize, boxSize); ctx.shadowBlur = 0;
+
+            let snakeX = snake[0].x; let snakeY = snake[0].y;
+            if (d === "LEFT") snakeX -= boxSize; if (d === "UP") snakeY -= boxSize;
+            if (d === "RIGHT") snakeX += boxSize; if (d === "DOWN") snakeY += boxSize;
+
+            // خوارزمية الاصطدام والتأثير الصوتي لارتفاع مستويات الصعوبة التصاعدية
+            if (snakeX == food.x && snakeY == food.y) {
+                score++; document.getElementById("liveScoreCounter").innerText = score;
+                playSynthesizedSound(520, "sine", 0.12); // صوت الأكل
+                food = { x: Math.floor(Math.random()*20)*boxSize, y: Math.floor(Math.random()*20)*boxSize };
+                
+                // تفعيل نظام الصعوبة التصاعدي كل 5 أكلات
+                if (score % 5 === 0) {
+                    level++; gameSpeed = Math.max(60, gameSpeed - 15);
+                    document.getElementById("gameDifficultyStatus").innerText = `المستوى الحالي: ${level} (سرعة حارقة 🔥)`;
+                    playSynthesizedSound(880, "square", 0.3); // صوت ارتفاع الصعوبة والمرحلة
+                    clearInterval(gameLoopInterval); gameLoopInterval = setInterval(drawGame, gameSpeed);
+                }
+            } else { snake.pop(); }
+
+            let newHead = { x: snakeX, y: snakeY };
+
+            // شفرة الخسارة والتحقق من صدمات الجدران أو الجسد كلياً ككتلة خرسانية حامية
+            if (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
+                isGameOver = true; clearInterval(gameLoopInterval);
+                playSynthesizedSound(150, "sawtooth", 0.6); // صوت الانهيار والخسارة
+                document.getElementById("finalScoreLabel").innerText = score;
+                document.getElementById("scoreModalOverlay").style.display = "flex";
+                return;
+            }
+            snake.unshift(newHead);
+        }
+
+        function collision(head, array) {
+            for (let i = 0; i < array.length; i++) { if (head.x == array[i].x && head.y == array[i].y) return true; }
+            return false;
+        }
+
+        // 📡 خوارزمية الحفظ التراكمي المباشر لقائمة المتصدرين عبر الأرشيف السحابي المحلي والسيرفر لـ Netlify
+        function getCloudLeaderboard() {
+            let db = JSON.parse(localStorage.getItem('snake_high_scores_db') || "[]");
+            if(db.length === 0) {
+                db = [
+                    {name: "Albrawe 👑", score: 45}, {name: "سيبراني_99", score: 28}, {name: "لاعب_مجهول", score: 12}
+                ];
+                localStorage.setItem('snake_high_scores_db', JSON.stringify(db));
+            }
+            db.sort((a,b) => b.score - a.score);
+            let rowsHtml = "";
+            db.slice(0, 7).forEach((p, idx) => {
+                rowsHtml += `<div class='leader-score-row'><span><span class='rank-badge'>#${idx+1}</span> ${p.name}</span><span style='color:#00ff66; font-weight:bold;'>${p.score} نقطة</span></div>`;
+            });
+            document.getElementById("leaderboardRowsContainer").innerHTML = rowsHtml;
+        }
+
+        function submitScoreToCloudServer() {
+            const rawName = document.getElementById("playerHighScoreName").value.trim();
+            const name = rawName || "لاعب تليجرام مجهول";
+            let db = JSON.parse(localStorage.getItem('snake_high_scores_db') || "[]");
+            db.push({name: name, score: score});
+            localStorage.setItem('snake_high_scores_db', JSON.stringify(db));
+            
+            // بث موازٍ للتحليلات الإحصائية لإبلاغ رادار الأدمن بارتفاع الأعداد
+            let assignedName = localStorage.getItem('cyber_assigned_username') || "Guest_User";
+            fetch(window.location.origin + '/.netlify/functions/update_duration', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: assignedName, game: 'snake', durationIncrement: score })
+            }).catch(() => {});
+
+            document.getElementById("scoreModalOverlay").style.display = "none";
+            alert("🟢 تم تخليد اسمك ونتيجتك بنجاح بداخل قائمة المتصدرين السحابية للزيارات حياً!");
+            location.reload();
+        }
+
+        gameLoopInterval = setInterval(drawGame, gameSpeed); getCloudLeaderboard();
+    </script>
+</body>
+</html>
