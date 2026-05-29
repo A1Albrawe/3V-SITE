@@ -51,41 +51,40 @@
         /* الجناح الأيسر الصافي للمحتوى المستقل */
         .tg-main-chat-view { flex: 1; background-color: var(--tg-bg-main); display: flex; flex-direction: column; position: relative; transition: background 0.3s; width: 100%; }
         
-        /* 🪐 إعادة صياغة الهيدر الأصلي العريض وحمايته من التمدد خارج الرؤية عبر هوامش داخلية صريحة بالبكسل */
+        /* شريط الهيدر الصافي - يحتوي على الاسم موسط بالملي وزر الإضاءة باليسار */
         .chat-header-bar {
             height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border);
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 40px; /* توسيع الهامش الداخلي لإدخال الأزرار عنوة داخل شاشتك */
-            z-index: 10; transition: background 0.3s; box-sizing: border-box; width: 100%;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
+            z-index: 10; transition: background 0.3s; box-sizing: border-box; width: 100%; position: relative;
         }
         
-        .header-section-right { display: flex; align-items: center; gap: 15px; min-width: 150px; }
-        .header-section-center { display: flex; align-items: center; justify-content: center; flex: 1; }
-        .header-section-left { display: flex; align-items: center; min-width: 150px; justify-content: flex-end; }
-        
-        /* 🍔 زر الهامبرغر في موضعه الأيمن الأصلي والبارز */
-        .menu-hamburger-btn {
-            background: none; border: none; color: var(--tg-color-active); font-size: 26px;
-            cursor: pointer; padding: 6px; outline: none; z-index: 25; display: block; transition: transform 0.2s;
-        }
-        .menu-hamburger-btn:hover { transform: scale(1.1); text-shadow: var(--tg-neon-glow); }
-        
-        /* 🎯 الشعار النيوني الموسط بالملي */
+        /* 🎯 الشعار النيوني الموسط بالملي في سنتر الشاشة */
         .brand-neon-center-btn {
             font-size: 19px; font-weight: bold; font-family: monospace; color: var(--tg-color-active);
-            text-decoration: none; cursor: pointer; letter-spacing: 1px;
-            text-shadow: var(--tg-neon-glow);
-            transition: transform 0.1s ease, text-shadow 0.2s;
-            -webkit-user-select: none; user-select: none; display: inline-block; z-index: 25;
+            text-decoration: none; cursor: pointer; letter-spacing: 1px; text-shadow: var(--tg-neon-glow);
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            transition: transform 0.1s ease, text-shadow 0.2s; -webkit-user-select: none; user-select: none; z-index: 25;
         }
-        .brand-neon-center-btn:active { transform: scale(0.92); text-shadow: 0 0 25px var(--tg-color-active); }
+        .brand-neon-center-btn:active { transform: translate(-50%, -50%) scale(0.92); text-shadow: 0 0 25px var(--tg-color-active); }
         
         /* 🌓 زر تبديل الوضع للأيقونة المضاءة المتجاوبة حياً في أقصى اليسار */
         .theme-toggle-btn {
             background: none; border: none; color: var(--tg-color-active); font-size: 21px;
             cursor: pointer; padding: 6px; outline: none; z-index: 25; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
+            margin-right: auto;
         }
         .theme-toggle-btn:hover { transform: scale(1.1); text-shadow: var(--tg-neon-glow); }
+
+        /* 🚀 زر القائمة الدائري الطائر الخارق (Floating Action Button) - مستقر في أقصى اليمين ومحمي بنسبة 100% */
+        .tg-floating-menu-btn {
+            position: fixed; top: 12px; right: 25px; width: 45px; height: 45px;
+            background-color: var(--tg-bg-sidebar); border: 2px solid var(--tg-color-active);
+            color: var(--tg-color-active); border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 18px; cursor: pointer; z-index: 200000;
+            box-shadow: var(--tg-neon-glow); transition: transform 0.2s, background-color 0.2s; outline: none;
+        }
+        .tg-floating-menu-btn:hover { transform: scale(1.08); background-color: var(--tg-color-active); color: #fff; }
+        .tg-floating-menu-btn:active { transform: scale(0.92); }
         
         .chat-messages-container { flex: 1; overflow-y: auto; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .sidebar-overlay-tap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; display:none; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
@@ -93,7 +92,7 @@
     </style>
 </head>
 <style>
-    /* 🛡️ استرجاع كارت البروفايل الكلاسيكي العريض والمنفصل الأصلي */
+    /* 🛡️ استرجاع كارت البروفايل الكلاسيكي العريض والمنفصل الأصلي الفخم */
     .tg-profile-card { width: 100%; max-width: 550px; background-color: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; box-sizing: border-box; transition: background 0.3s; margin-bottom: 20px; }
     .tg-avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 20px auto; }
     .tg-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--tg-color-active); box-shadow: var(--tg-neon-glow); }
@@ -115,6 +114,11 @@
 <body theme="dark">
     <!-- غطاء الشاشة اللمسي لإغلاق القائمة عند النقر بالخارج -->
     <div class="sidebar-overlay-tap" id="sidebarMobileOverlay" onclick="toggleMainSidebarNavigation(false)"></div>
+
+    <!-- 🚀 زر نظام طائر ومستقل نوني فخم مستحيل حظره أو اختفاؤه حياً على أي شاشة بالكون لتشغيل المنيو الجانبي -->
+    <button class="tg-floating-menu-btn" onclick="toggleMainSidebarNavigation(true)" title="فتح وقفل القائمة النظامية">
+        <i class="fas fa-bars"></i>
+    </button>
 
     <div class="tg-layout-wrapper">
         
@@ -178,22 +182,13 @@
         <div class="tg-main-chat-view">
             <!-- 🪐 الهيدر الكلاسيكي العريض والمنفصل بالكامل المفرود على كامل مساحة الشاشة بنقاء -->
             <div class="chat-header-bar">
-                <!-- اليمين: زر الهامبرغر المضمون الرؤية 100% داخل حدود الشاشة -->
-                <div class="header-section-right">
-                    <button class="menu-hamburger-btn" onclick="toggleMainSidebarNavigation(true)"><i class="fas fa-bars"></i></button>
-                </div>
-                
                 <!-- السنتر: اسم البراوي موسط تماماً بتوهجه النيوني الأسطوري -->
-                <div class="header-section-center">
-                    <div class="brand-neon-center-btn" onclick="location.href='/'">> ALBRAWE_</div>
-                </div>
+                <div class="brand-neon-center-btn" onclick="location.href='/'">> ALBRAWE_</div>
                 
                 <!-- اليسار: زر تبديل الإضاءة والوضع (شمس وقمر) مضمون الرؤية 100% -->
-                <div class="header-section-left">
-                    <button class="theme-toggle-btn" onclick="toggleTelegramThemeGlobal()">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                    </button>
-                </div>
+                <button class="theme-toggle-btn" onclick="toggleTelegramThemeGlobal()">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
             </div>
             
             <div class="chat-messages-container">
@@ -240,7 +235,7 @@
             localStorage.setItem("tg_preferred_theme", nextTheme);
         }
 
-        // ✅ خوارزمية التحكم التبادلي المطلقة والصافية للمنيو الجانبي بضغطة زر الهامبرغر
+        // ✅ خوارزمية التحكم التبادلي المطلقة والصافية للمنيو الجانبي بضغطة الزر الدائري الخارق الطائر
         function toggleMainSidebarNavigation(openState) {
             const sidebar = document.getElementById("globalNavigationSidebar");
             const overlay = document.getElementById("sidebarMobileOverlay");
