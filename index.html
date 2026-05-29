@@ -48,53 +48,56 @@
         .chat-node-meta { display: flex; flex-direction: column; text-align: right; overflow: hidden; }
         .chat-node-title { font-size: 14px; font-weight: bold; margin: 0; white-space: nowrap; text-overflow: ellipsis; }
 
-        /* الجناح الأيسر الصافي للمحتوى */
+        /* الجناح الأيسر الصافي للمحتوى والمساحة المركزية */
         .tg-main-chat-view { flex: 1; background-color: var(--tg-bg-main); display: flex; flex-direction: column; position: relative; transition: background 0.3s; width: 100%; }
-        
-        /* 🪐 شريط الهيدر المطور بالـ Flexbox الموزع لمنع الانضغاط والاختفاء نهائياً على الكمبيوتر والموبايل */
-        .chat-header-bar {
+        .chat-messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+
+        /* 🪐 معمارية بطاقة الحاوية الشاملة لدمج الهيدر بالبروفايل لمنع هروب الأزرار نهائياً */
+        .tg-master-unified-card {
+            width: 100%; max-width: 550px; background-color: var(--tg-bg-chat);
+            border: 1px solid var(--tg-border); border-radius: 20px; overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2), var(--tg-neon-glow);
+            display: flex; flex-direction: column; transition: background 0.3s;
+        }
+
+        /* الهيدر المدمج التناظري الفخم في رأس الحاوية */
+        .embedded-card-header {
             height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border);
             display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
-            z-index: 10; transition: background 0.3s; box-sizing: border-box; width: 100%;
+            box-sizing: border-box; width: 100%;
         }
-        
-        /* الأجنحة الثلاثية المقفلة بالبكسل لضمان الرؤية الحتمية للأزرار والاسم */
-        .header-section-right { display: flex; align-items: center; gap: 12px; min-width: 120px; justify-content: flex-start; }
-        .header-section-center { display: flex; align-items: center; justify-content: center; flex: 1; }
-        .header-section-left { display: flex; align-items: center; min-width: 120px; justify-content: flex-end; }
-        
-        /* 🍔 زر الهامبرغر النيوني المطور والمضمون الرؤية 100% */
+
+        /* 🍔 زر الهامبرغر النيوني المستحيل اختفاؤه باليمين صراحة */
         .menu-hamburger-btn {
             background: none; border: none; color: var(--tg-color-active); font-size: 24px;
-            cursor: pointer; padding: 6px; outline: none; z-index: 25; display: block; transition: transform 0.2s;
+            cursor: pointer; padding: 5px; outline: none; transition: transform 0.2s; display: block;
         }
         .menu-hamburger-btn:hover { transform: scale(1.1); text-shadow: var(--tg-neon-glow); }
         
-        /* 🎯 شعار البراوي النيوني الفخم الموسط برقم سحري مذهل */
+        /* 🎯 شعار البراوي النيوني الموسط بالملي بمنتصف الهيدر التناظري */
         .brand-neon-center-btn {
             font-size: 19px; font-weight: bold; font-family: monospace; color: var(--tg-color-active);
             text-decoration: none; cursor: pointer; letter-spacing: 1px;
             text-shadow: var(--tg-neon-glow);
             transition: transform 0.1s ease, text-shadow 0.2s;
-            -webkit-user-select: none; user-select: none;
-            display: inline-block; z-index: 25;
+            -webkit-user-select: none; user-select: none; inline-box: block;
         }
         .brand-neon-center-btn:active { transform: scale(0.92); text-shadow: 0 0 25px var(--tg-color-active); }
         
-        /* 🌓 زر الداكن والفاتح المضمن بالأيقونة المضاءة المتجاوبة حياً */
+        /* 🌓 زر تبديل الإضاءة والداكن في اليسار صراحة صب بالبكسل */
         .theme-toggle-btn {
             background: none; border: none; color: var(--tg-color-active); font-size: 20px;
-            cursor: pointer; padding: 6px; outline: none; z-index: 25; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
+            cursor: pointer; padding: 5px; outline: none; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
         }
         .theme-toggle-btn:hover { transform: scale(1.1); text-shadow: var(--tg-neon-glow); }
-        
-        .chat-messages-container { flex: 1; overflow-y: auto; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+
         .sidebar-overlay-tap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; display:none; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
         .sidebar-overlay-tap.active { display:block; }
     </style>
 </head>
 <style>
-    .tg-profile-card { width: 100%; max-width: 550px; background-color: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; box-sizing: border-box; transition: background 0.3s; margin-bottom: 20px; }
+    /* محتويات بطاقة البروفايل وجسم النصوص التعريفية */
+    .card-body-profile-content { padding: 30px; text-align: center; box-sizing: border-box; }
     .tg-avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 20px auto; }
     .tg-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--tg-color-active); box-shadow: var(--tg-neon-glow); }
     
@@ -108,7 +111,7 @@
     .bio-row-label { font-size: 12px; color: var(--tg-text-sub); }
     .bio-row-value { font-size: 14.5px; font-weight: 500; line-height: 1.5; }
 
-    /* شريط علامة الحقوق النصي الرمادي الهادئ الموثق بأسفل شاشة الدردشة بالمنتصف تماماً */
+    /* شريط علامة الحقوق النصي الرمادي الهادئ المستقر في قاع الشات */
     .clean-tg-footer-text { margin-top: auto; padding: 15px 0; font-size: 12px; color: var(--tg-text-sub); font-family: inherit; text-align: center; width: 100%; letter-spacing: 0.5px; opacity: 0.8; }
 </style>
 
@@ -118,7 +121,7 @@
 
     <div class="tg-layout-wrapper">
         
-        <!-- ☰ قائمة جانيبة واحدة موحدة وصافية 100% ومغلقة دائماً بشكل افتراضي كلياً -->
+        <!-- ☰ قائمة جانيبة واحدة موحدة وصافية 100% ومغلقة دائماً بشكل افتراضي كلياً حماية من التكرار -->
         <div class="tg-sidebar-chats" id="globalNavigationSidebar">
             <div class="tg-sidebar-header">
                 <span class="sidebar-brand-txt">CORE_SYSTEM_STREAM</span>
@@ -176,47 +179,49 @@
         </div>
         <!-- الجناح الأيسر: مساحة شات العرض والمحتوى المركزي للبروفايل -->
         <div class="tg-main-chat-view">
-            <!-- 🪐 هيكل التوزيع الثلاثي الحصين بالفليكس بوكس الصافي لمنع حجب الأزرار نهائياً -->
-            <div class="chat-header-bar">
-                <!-- الغرفة اليمنى: زر الهامبرغر مقفل باليمين صراحة -->
-                <div class="header-section-right">
-                    <button class="menu-hamburger-btn" onclick="toggleMainSidebarNavigation(true)"><i class="fas fa-bars"></i></button>
-                </div>
-                
-                <!-- الغرفة الوسطى: شعار البراوي النيوني موسط بالملي وبقفل بكسل -->
-                <div class="header-section-center">
-                    <div class="brand-neon-center-btn" onclick="location.href='/'">> ALBRAWE_</div>
-                </div>
-                
-                <!-- 🌓 الغرفة اليسرى: زر الداكن والفاتح مقفل باليسار صراحة وموثق بالأيقونة التفاعلية -->
-                <div class="header-section-left">
-                    <button class="theme-toggle-btn" onclick="toggleTelegramThemeGlobal()">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                    </button>
-                </div>
-            </div>
             
             <div class="chat-messages-container">
-                <div class="tg-profile-card">
-                    <div class="tg-avatar-container">
-                        <img src="/static/avatar.png" class="tg-avatar-img" alt="Albrawe Profile Avatar" onerror="this.src='https://flagcdn.com'">
-                    </div>
+                
+                <!-- 🪐 بطاقة الماستر الموحدة (الحل الجذري لمنع هروب أو اختفاء الأزرار) -->
+                <div class="tg-master-unified-card">
                     
-                        <h2 class="tg-user-name">Albrawe</h2>
-                        <i class="fas fa-check-circle verified-blue-badge" title="حساب مسؤول موثق"></i>
+                    <!-- الهيدر المدمج بالبطاقة مباشرة: مستحيل يختفي على الشاشات الكبيرة أو الموبايل -->
+                    <div class="embedded-card-header">
+                        <!-- 🍔 زر الهامبرغر مقفل باليمين صراحة -->
+                        <button class="menu-hamburger-btn" onclick="toggleMainSidebarNavigation(true)"><i class="fas fa-bars"></i></button>
+                        
+                        <!-- 🎯 الاسم نيون موسط بالملي وبقفل بكسل ثابت -->
+                        <div class="brand-neon-center-btn" onclick="location.href='/'">> ALBRAWE_</div>
+                        
+                        <!-- 🌓 زر تبديل الإضاءة والداكن مقفل باليسار صراحة -->
+                        <button class="theme-toggle-btn" onclick="toggleTelegramThemeGlobal()">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </button>
                     </div>
-                    <div class="tg-user-status">Core Dev Security Engineer | @Albrawe_2026</div>
-                    
-                    <div class="tg-bio-section">
-                        <div class="bio-row-item">
-                            <span class="bio-row-label">النبذة التعريفية المحدثة (Bio) لعام 2026</span>
-                            <span class="bio-row-value">بناء وتطوير تطبيقات الويب الساكنة والكاملة، وتصميم وتعديل اسكريبتات الأتمتة لبايثون الحصينة. إنشاء قنوات البث السيبرانية المدمجة مع رادارات التتبع اللحظي وبوتات تليجرام الفورية.</span>
+
+                    <!-- جسم البروفايل الداخلي للمسؤول البراوي -->
+                    <div class="card-body-profile-content">
+                        <div class="tg-avatar-container">
+                            <img src="/static/avatar.png" class="tg-avatar-img" alt="Albrawe Profile Avatar" onerror="this.src='https://flagcdn.com'">
                         </div>
-                        <div class="bio-row-item">
-                            <span class="bio-row-label">روابط قنوات التواصل الرسمية والتحقق</span>
-                            <span class="bio-row-value" style="color: var(--tg-color-active); font-weight:bold; cursor:pointer;" onclick="window.open('https://t.me')">t.me/Albrawe_2026 ✈️</span>
+                        
+                            <h2 class="tg-user-name">Albrawe</h2>
+                            <i class="fas fa-check-circle verified-blue-badge" title="حساب مسؤول موثق"></i>
+                        </div>
+                        <div class="tg-user-status">Core Dev Security Engineer | @Albrawe_2026</div>
+                        
+                        <div class="tg-bio-section">
+                            <div class="bio-row-item">
+                                <span class="bio-row-label">النبذة التعريفية المحدثة (Bio) لعام 2026</span>
+                                <span class="bio-row-value">بناء وتطوير تطبيقات الويب الساكنة والكاملة، وتصميم وتعديل اسكريبتات الأتمتة لبايثون الحصينة. إنشاء قنوات البث السيبرانية المدمجة مع رادارات التتبع اللحظي وبوتات تليجرام الفورية.</span>
+                            </div>
+                            <div class="bio-row-item">
+                                <span class="bio-row-label">روابط قنوات التواصل الرسمية والتحقق</span>
+                                <span class="bio-row-value" style="color: var(--tg-color-active); font-weight:bold; cursor:pointer;" onclick="window.open('https://t.me')">t.me/Albrawe_2026 ✈️</span>
+                            </div>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- 🛡️ علامة الحقوق النصية الرمادية الصافية المستقرة في قاع صفحة التصفح بالمنتصف تماماً -->
