@@ -6,7 +6,7 @@
     <title>Albrawe | Telegram OS v2026</title>
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
-        /* 🎨 مصفوفة التناغم اللوني والتبديل الديناميكي الحصين لتليجرام نيون */
+        /* 🎨 مصفوفة التناغم اللوني والتبديل الديناميكي لتليجرام */
         :root[theme="dark"] {
             --tg-bg-main: #0e1621; --tg-bg-sidebar: #17212b; --tg-bg-chat: #182533;
             --tg-text-main: #f5f5f5; --tg-text-sub: #708499; --tg-color-active: #5288c1;
@@ -19,14 +19,14 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--tg-bg-main); color: var(--tg-text-main);
             margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; transition: background 0.3s, color 0.3s;
         }
 
         .tg-layout-wrapper { display: flex; width: 100%; height: 100vh; position: relative; }
 
-        /* ☰ القائمة الجانبية الموحدة والذكية - مرنة 100% للتنقل وقابلة للتحجيم */
+        /* ☰ القائمة الجانبية الصافية الموحدة - مخفية وقابلة للتحكم المطلق بالزر */
         .tg-sidebar-chats {
             width: 320px; background-color: var(--tg-bg-sidebar); border-left: 1px solid var(--tg-border);
             display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
@@ -46,24 +46,20 @@
         .chat-node-meta { display: flex; flex-direction: column; text-align: right; overflow: hidden; }
         .chat-node-title { font-size: 14px; font-weight: bold; margin: 0; white-space: nowrap; text-overflow: ellipsis; }
         .chat-node-preview { font-size: 11.5px; color: var(--tg-text-sub); margin: 3px 0 0 0; white-space: nowrap; text-overflow: ellipsis; }
-        .chat-item-node:hover .chat-node-preview, .chat-item-node.active .chat-node-preview { color: rgba(255,255,255,0.8); }
 
-        /* الجناح الأيسر/الأوسط للمحتوى وبناء الهيدر */
+        /* الجناح الأيسر للمحتوى */
         .tg-main-chat-view { flex: 1; background-color: var(--tg-bg-main); display: flex; flex-direction: column; position: relative; transition: background 0.3s; }
-        .chat-header-bar { height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; z-index: 10; transition: background 0.3s; }
+        .chat-header-bar { height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; z-index: 10; }
         
-        .menu-hamburger-btn { background: none; border: none; color: var(--tg-color-active); font-size: 22px; cursor: pointer; display: none; margin-left: 12px; padding: 5px; outline: none; }
+        /* زر الهامبرغر المثبت لفتح وغلق القائمة بمرونة واضحة */
+        .menu-hamburger-btn { background: none; border: none; color: var(--tg-color-active); font-size: 22px; cursor: pointer; margin-left: 12px; padding: 5px; outline: none; transition: 0.2s; }
+        .menu-hamburger-btn:hover { transform: scale(1.05); }
         .theme-toggle-btn { background: none; border: none; color: var(--tg-color-active); font-size: 18px; cursor: pointer; }
 
         .chat-messages-container { flex: 1; overflow-y: auto; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        
-        /* 🛡️ شريط علامة الحقوق المضيئة أسفل كل الصفحات لمنع الاختفاء والتعليق */
-        .global-tg-footer-bar { width: 100%; text-align: center; padding: 12px 0; background-color: var(--tg-bg-sidebar); border-top: 1px solid var(--tg-border); font-size: 11px; color: var(--tg-text-sub); font-family: monospace; letter-spacing: 1px; z-index: 50; transition: background 0.3s; }
-        .global-tg-footer-bar span { color: var(--tg-color-active); font-weight: bold; text-shadow: var(--tg-neon-glow); }
     </style>
 </head>
 <style>
-    /* 🛡️ بطاقة بروفايل التليجرام الفخمة للأدمن علي البراوي حياً */
     .tg-profile-card { width: 100%; max-width: 550px; background-color: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; box-sizing: border-box; transition: background 0.3s; margin-bottom: 20px; }
     .tg-avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 20px auto; }
     .tg-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--tg-color-active); box-shadow: var(--tg-neon-glow); }
@@ -78,9 +74,11 @@
     .bio-row-label { font-size: 12px; color: var(--tg-text-sub); }
     .bio-row-value { font-size: 14.5px; font-weight: 500; line-height: 1.5; }
 
-    /* متجاوب سحابي: قواعد نقل وتحريك المنيو الجانبي باللمس للهواتف */
-    @media (max-width: 768px) {
-        .menu-hamburger-btn { display: block; }
+    /* 🛡️ شريط علامة الحقوق النصي الرمادي الصافي بأسفل شاشة التصفح */
+    .clean-tg-footer-text { margin-top: auto; padding: 15px 0; font-size: 12px; color: var(--tg-text-sub); font-family: inherit; text-align: center; width: 100%; letter-spacing: 0.5px; opacity: 0.85; }
+
+    /* التحكم المرن والمتجاوب بالستارة الجانبية */
+    @media (max-width: 900px) {
         .tg-sidebar-chats { position: fixed; top: 0; right: 0; height: 100vh; transform: translateX(100%); box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
         .tg-sidebar-chats.open { transform: translateX(0); }
         .sidebar-overlay-tap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:99; display:none; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
@@ -89,17 +87,16 @@
 </style>
 
 <body theme="dark">
-    <!-- غطاء الشاشة اللمسي لإغلاق القائمة الجانبية بالهاتف عند نقر أي مكان بالخارج أو لمس الخلفية -->
-    <div class="sidebar-overlay-tap" id="sidebarMobileOverlay" onclick="toggleMobileSidebarMenu(false)"></div>
+    <!-- غطاء الشاشة اللمسي لإغلاق القائمة عند النقر بالخارج بالهاتف -->
+    <div class="sidebar-overlay-tap" id="sidebarMobileOverlay" onclick="toggleMainSidebarNavigation(false)"></div>
 
     <div class="tg-layout-wrapper">
         
-        <!-- ☰ القائمة الجانبية المستقرة والموحدة لـ تليجرام OS (فتح وإغلاق مرن حركي) -->
+        <!-- ☰ قائمة جانيبة واحدة موحدة وصافية 100% (تم مسح أي تكرار) -->
         <div class="tg-sidebar-chats" id="globalNavigationSidebar">
             <div class="tg-sidebar-header">
                 <a href="/" class="brand-logo-btn">> ALBRAWE_</a>
-                <!-- زر ضرب الإغلاق السريع X داخل الهواتف لمنع التداخل -->
-                <i class="fas fa-times" style="color: var(--tg-text-sub); cursor: pointer; display:none; font-size:18px;" id="mobileCloseSidebarX" onclick="toggleMobileSidebarMenu(false)"></i>
+                <i class="fas fa-times" style="color: var(--tg-text-sub); cursor: pointer; font-size:18px;" onclick="toggleMainSidebarNavigation(false)"></i>
             </div>
             
             <div class="chats-scrollable-area">
@@ -155,8 +152,8 @@
         <div class="tg-main-chat-view">
             <div class="chat-header-bar">
                 <div style="display: flex; align-items: center;">
-                    <!-- ✅ التفعيل والربط الهندسي لزر الهامبرغر الصريح لفتح المنظومة الجانبية بالهاتف فورياً ومباشرة -->
-                    <button class="menu-hamburger-btn" onclick="toggleMobileSidebarMenu(true)"><i class="fas fa-bars"></i></button>
+                    <!-- ✅ تفعيل زر الهامبرغر لفتح وغلق القائمة الجانبية بمرونة مطلقة -->
+                    <button class="menu-hamburger-btn" onclick="toggleMainSidebarNavigation(true)"><i class="fas fa-bars"></i></button>
                     <div style="text-align: right;">
                         <h3 style="margin: 0; font-size: 15px; cursor:pointer;" onclick="location.href='/'">Albrawe</h3>
                         <span style="font-size: 11.5px; color: var(--tg-color-active);">متصل الآن بالخادم السحابي</span>
@@ -187,10 +184,10 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 🛡️ علامة الحقوق والتوثيق الرمادية الصافية المدمجة بأسفل الشات -->
+                <div class="clean-tg-footer-text">جميع الحقوق محفوظة سيبرانياً وتعود للمسؤول البراوي لعام 2026 ©</div>
             </div>
-            
-            <!-- 🛡️ شريط علامة الحقوق والتوثيق للمسؤول البرمي البراوي لعام 2026 -->
-            <div class="global-tg-footer-bar">جميع الحقوق محفوظة سيبرانياً وتعود للمسؤول <span>البراوي</span> لعام 2026 ©</div>
         </div>
 
     </div>
@@ -207,20 +204,15 @@
             localStorage.setItem("tg_preferred_theme", nextTheme);
         }
 
-        // ✅ خوارزمية الربط المطلقة والكاملة لحركة المنيو الجانبي عند كبس الهمبرغر باللمس الصافي
-        function toggleMobileSidebarMenu(openState) {
+        // ✅ محرك فتح وغلق القائمة بضغطة زر الهامبرغر أو غطاء الشاشة اللمسي
+        function toggleMainSidebarNavigation(openState) {
             const sidebar = document.getElementById("globalNavigationSidebar");
             const overlay = document.getElementById("sidebarMobileOverlay");
-            const closeX = document.getElementById("mobileCloseSidebarX");
             
             if(openState) {
-                sidebar.classList.add("open"); 
-                overlay.classList.add("active");
-                if(closeX) closeX.style.display = "block";
+                sidebar.classList.add("open"); overlay.classList.add("active");
             } else {
-                sidebar.classList.remove("open"); 
-                overlay.classList.remove("active");
-                if(closeX) closeX.style.display = "none";
+                sidebar.classList.remove("open"); overlay.classList.remove("active");
             }
         }
 
