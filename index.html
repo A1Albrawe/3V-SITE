@@ -26,7 +26,7 @@
 
         .tg-layout-wrapper { display: flex; width: 100%; height: 100vh; position: relative; }
 
-        /* ☰ القائمة الجانبية الموحدة والذكية - مغلقة ومخفية كلياً بشكل حتمي وافتراضي على جميع الشاشات */
+        /* ☰ القائمة الجانبية الصافية الموحدة - مغلقة ومخفية كلياً بشكل حتمي وافتراضي على جميع الشاشات */
         .tg-sidebar-chats {
             position: fixed; top: 0; right: 0; height: 100vh; width: 320px; 
             background-color: var(--tg-bg-sidebar); border-left: 1px solid var(--tg-border);
@@ -53,21 +53,22 @@
         /* الجناح الأيسر الصافي للمحتوى */
         .tg-main-chat-view { flex: 1; background-color: var(--tg-bg-main); display: flex; flex-direction: column; position: relative; transition: background 0.3s; width: 100%; }
         
-        /* 🪐 شريط الهيدر المطور بالتناظر الثلاثي المطلق لتثبيت العناصر والاسم بالمنتصف بدقة بالغة */
+        /* 🪐 شريط الهيدر المطور بالتقسيم الموزع الحاسم ثلاثي المحاور لمنع التعليق */
         .chat-header-bar {
             height: 60px; background-color: var(--tg-bg-sidebar); border-bottom: 1px solid var(--tg-border);
-            display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 20px;
-            z-index: 10; transition: background 0.3s; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 10; transition: background 0.3s; box-sizing: border-box; position: relative;
         }
         
-        .header-right-container { display: flex; align-items: center; gap: 12px; justify-content: flex-start; }
-        .header-left-container { display: flex; align-items: center; justify-content: flex-end; }
+        .header-section-right { display: flex; align-items: center; gap: 10px; width: 30%; justify-content: flex-start; }
+        .header-section-center { display: flex; align-items: center; justify-content: center; width: 40%; position: absolute; left: 50%; transform: translateX(-50%); }
+        .header-section-left { display: flex; align-items: center; width: 30%; justify-content: flex-end; }
         
-        /* 🍔 زر الهامبرغر الموجه والمثبت بموضعه الأيمن الصحيح تماماً */
+        /* 🍔 زر الهامبرغر في اليمين صراحة */
         .menu-hamburger-btn { background: none; border: none; color: var(--tg-color-active); font-size: 22px; cursor: pointer; padding: 5px; outline: none; transition: transform 0.2s; display: block; }
         .menu-hamburger-btn:hover { transform: scale(1.1); text-shadow: var(--tg-neon-glow); }
         
-        /* 🎯 شعار المسؤول الموعود مستقراً ومضاءً نيونياً بمنتصف الهيدر تماماً مع تأثير الانضغاط الارتدادي الحركي الساحر */
+        /* 🎯 شعار البراوي النيوني الموعود مستقراً ومضاءً نيونياً بمنتصف الهيدر تماماً مع تأثير الانضغاط الارتدادي */
         .brand-neon-center-btn {
             font-size: 18px; font-weight: bold; font-family: monospace; color: var(--tg-color-active);
             text-decoration: none; cursor: pointer; letter-spacing: 1px;
@@ -77,18 +78,38 @@
             display: inline-block;
         }
         .brand-neon-center-btn:active {
-            transform: scale(0.92); /* استرجاع تأثير ضغط الهكرز للارتداد */
+            transform: scale(0.92);
             text-shadow: 0 0 25px var(--tg-color-active);
         }
         
-        .theme-toggle-btn { background: none; border: none; color: var(--tg-color-active); font-size: 18px; cursor: pointer; padding: 5px; outline: none; }
-        .chat-messages-container { flex: 1; overflow-y: auto; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        /* زر الداكن والفاتح المطور بالأيقونة التفاعلية النيونية في اليسار صراحة */
+        .theme-toggle-btn { background: none; border: none; color: var(--tg-color-active); font-size: 19px; cursor: pointer; padding: 5px; outline: none; box-shadow: none; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
+        .theme-toggle-btn:hover { transform: scale(1.1); text-shadow: var(--tg-neon-glow); }
         
-        /* غطاء الحماية اللمسي */
+        .chat-messages-container { flex: 1; overflow-y: auto; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .sidebar-overlay-tap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; display:none; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
         .sidebar-overlay-tap.active { display:block; }
     </style>
 </head>
+<style>
+    .tg-profile-card { width: 100%; max-width: 550px; background-color: var(--tg-bg-chat); border: 1px solid var(--tg-border); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; box-sizing: border-box; transition: background 0.3s; margin-bottom: 20px; }
+    .tg-avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 20px auto; }
+    .tg-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--tg-color-active); box-shadow: var(--tg-neon-glow); }
+    
+    .tg-user-identity { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 8px; }
+    .tg-user-name { font-size: 24px; font-weight: bold; margin: 0; }
+    .verified-blue-badge { color: #3390ec; font-size: 18px; text-shadow: 0 0 8px rgba(51,144,236,0.5); }
+    .tg-user-status { font-size: 13px; color: var(--tg-color-active); font-weight: 500; margin-bottom: 25px; }
+
+    .tg-bio-section { border-top: 1px solid var(--tg-border); padding-top: 20px; text-align: right; }
+    .bio-row-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; }
+    .bio-row-label { font-size: 12px; color: var(--tg-text-sub); }
+    .bio-row-value { font-size: 14.5px; font-weight: 500; line-height: 1.5; }
+
+    /* شريط علامة الحقوق النصي الرمادي الهادئ الموثق بأسفل شاشة الدردشة بالمنتصف تماماً */
+    .clean-tg-footer-text { margin-top: auto; padding: 15px 0; font-size: 12px; color: var(--tg-text-sub); font-family: inherit; text-align: center; width: 100%; letter-spacing: 0.5px; opacity: 0.8; }
+</style>
+
 <body theme="dark">
     <!-- غطاء الشاشة اللمسي لإغلاق القائمة عند النقر بالخارج -->
     <div class="sidebar-overlay-tap" id="sidebarMobileOverlay" onclick="toggleMainSidebarNavigation(false)"></div>
@@ -153,22 +174,24 @@
         </div>
         <!-- الجناح الأيسر: مساحة شات العرض والمحتوى المركزي للبروفايل -->
         <div class="tg-main-chat-view">
-            <!-- الهيدر المطور بالتقسيم الثلاثي: الهامبرغر يميناً، الشعار نيون موسطاً، وزر التبديل يساراً -->
+            <!-- 🪐 تقسيم الهيدر الفولاذي الموزع بالمحاور: الهمبرغر يميناً، البراوي موسطاً صراحة، والتبديل يساراً صراحة -->
             <div class="chat-header-bar">
-                <div class="header-right-container">
+                <div class="header-section-right">
+                    <!-- 🍔 زر الهامبرغر في مكانه الاستراتيجي الصحيح باليمين -->
                     <button class="menu-hamburger-btn" onclick="toggleMainSidebarNavigation(true)"><i class="fas fa-bars"></i></button>
-                    <div style="text-align: right;">
-                        <span style="font-size: 12px; color: var(--tg-text-sub); font-weight: 500; display: inline-block;">بروفايل الأدمن</span>
-                    </div>
+                    <span style="font-size: 13px; color: var(--tg-text-sub); font-weight: bold;" class="sidebar-brand-txt">الرئيسية</span>
                 </div>
                 
-                <div>
-                    <!-- ✅ الشعار النيوني المضاء الحاكم مستقراً في المنتصف تماماً مع ميزة ارتداد الضغط عند النقر -->
+                <div class="header-section-center">
+                    <!-- 🎯 اسم البراوي مستقراً نيونياً بمنتصف الهيدر تماماً ويوجهك للرئيسية عند الكبس -->
                     <div class="brand-neon-center-btn" onclick="location.href='/'">> ALBRAWE_</div>
                 </div>
                 
-                <div class="header-left-container">
-                    <button class="theme-toggle-btn" onclick="toggleTelegramThemeGlobal()"><i class="fas fa-moon" id="themeIcon"></i></button>
+                <div class="header-section-left">
+                    <!-- 🌓 زر الداكن والفاتح الصريح والمضمون الحركي بالأيقونة التفاعلية المتغيرة نيونياً -->
+                    <button class="theme-toggle-btn" onclick="toggleTelegramThemeGlobal()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
                 </div>
             </div>
             
@@ -195,7 +218,7 @@
                     </div>
                 </div>
 
-                <!-- 🛡️ علامة الحقوق النصية الملتزمة باللون الرمادي الهادئ الموثق بأسفل الشات تماماً بالمنتصف -->
+                <!-- 🛡️ علامة الحقوق النصية الرمادية الصافية المستقرة في قاع صفحة التصفح بالمنتصف تماماً -->
                 <div class="clean-tg-footer-text">جميع الحقوق محفوظة سيبرانياً وتعود للمسؤول البراوي لعام 2026 ©</div>
             </div>
         </div>
@@ -203,6 +226,7 @@
     </div>
 
     <script>
+        // 🌓 محرك تبديل الألوان (الداكن والفاتح نيون) وتغيير أيقونة الشمس والقمر لحظياً للزائر
         function toggleTelegramThemeGlobal() {
             const htmlNode = document.documentElement;
             const currentTheme = htmlNode.getAttribute("theme");
@@ -214,7 +238,7 @@
             localStorage.setItem("tg_preferred_theme", nextTheme);
         }
 
-        // ✅ خوارزمية التحكم التبادلي المطلقة والصافية الخالية من الأخطاء للمنيو الجانبي بضغطة زر الهامبرغر
+        // ✅ خوارزمية التحكم التبادلي المطلقة والصافية للمنيو الجانبي بضغطة زر الهامبرغر باليمين
         function toggleMainSidebarNavigation(openState) {
             const sidebar = document.getElementById("globalNavigationSidebar");
             const overlay = document.getElementById("sidebarMobileOverlay");
